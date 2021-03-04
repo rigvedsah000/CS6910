@@ -1,6 +1,7 @@
 from matplotlib import pyplot
 from keras.datasets import fashion_mnist
 import preprocessing, train
+import accuracy_loss, init_strategy
 
  # Load dataset
 (train_X, train_Y), (test_X, test_Y) = fashion_mnist.load_data()
@@ -50,3 +51,7 @@ _hl = [5]                                                                     # 
 _ol = [len(train_y[0])]                                                       # Output layers
 
 W, b = train.train(train_x[:n], train_y[:n], d, _hl, _ol)
+
+a, l = accuracy_loss.get_accuracy_and_loss(W, b, train_x[:n], train_y[:n], len(_hl))
+
+print("Accuracy: ", a, " Loss: ", l)

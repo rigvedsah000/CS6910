@@ -1,3 +1,5 @@
+import numpy as np
+
 def logistic(x):
   res = []
   for _x in x:

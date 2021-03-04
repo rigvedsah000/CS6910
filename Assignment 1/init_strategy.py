@@ -40,7 +40,7 @@ def random_init2(d, hl, ol):
     if i == 0:
       W.append(np.array([ np.array([ random.uniform(-0.5,0.5) for i in range( d) ])  for j in range(n_neurons)   ]))
     else:
-      W.append(np.array([ np.array([ random.uniform(-0.5,0.5) for i in range( hl[index - 1]) ]) for j in range(n_neurons)  ]))
+      W.append(np.array([ np.array([ random.uniform(-0.5,0.5) for i in range( hl[i - 1]) ]) for j in range(n_neurons)  ]))
 
     if i == len(hl)-1:
       b.append(np.array([ random.uniform(-0.5,0.5) for m in range(ol[0])  ]))

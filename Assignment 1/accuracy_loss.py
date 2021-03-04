@@ -8,7 +8,8 @@ def predict(W, b, x, n_hl):
       a =  np.dot(W[i],x) + b[i] 
     else:
       a =  np.dot(W[i],h) + b[i]
-      h = functions.logistic(a)
+    
+    h = functions.logistic(a)
   
   a = np.dot(W[n_hl+1],h ) + b[n_hl+1]
   y_pred = functions.softmax(a-max(a))
