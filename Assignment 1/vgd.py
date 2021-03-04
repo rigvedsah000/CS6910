@@ -1,10 +1,10 @@
 import numpy as np
-import random_init, xavier_init, forward_propagation, back_propagation
+import  init_strategy, forward_propagation, back_propagation
 
 def vgd(train_x, train_y, d, hl, ol):
   
   # Initialize params
-  W, b =  xavier_init.xavier_init(d, hl, ol)
+  W, b =  init_strategy.xavier_init(d, hl, ol)
 
   t, n_hl, epochs, eta = 0, len(hl), 1000, 0.001
 

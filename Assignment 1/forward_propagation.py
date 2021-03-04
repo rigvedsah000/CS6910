@@ -1,18 +1,6 @@
 import numpy as np
+import functions
 
-def logistic(x):
-  res = []
-  for _x in x:
-     res.append( 1 / ( 1 + np.exp(-(float(_x))) ) )
-  return np.array(res)
-
-def softmax(x):
-  res = []
-  denom = sum([ np.exp(float(_x)) for _x in x ])
-  for _x in x:
-    num = np.exp(float(_x))
-    res.append(num / denom)
-  return np.array(res)
 
 def forward_propagation(W, b, x, n_hl):
   h, a = [ [] ], [ [] ]
@@ -25,13 +13,13 @@ def forward_propagation(W, b, x, n_hl):
     else:
       _a = np.dot( W[i], h[i - 1] ) + b[i]
 
-    _h = logistic(_a)
+    _h = functions.logistic(_a)
 
     a.append(_a)
     h.append(_h)
 
   _a = np.dot( W[n_hl + 1],  h[n_hl] ) + b[n_hl + 1]
-  _y = softmax(_a - max(_a))
+  _y = functions.softmax(_a - max(_a))
 
   a.append(_a)
   h.append(_y)
