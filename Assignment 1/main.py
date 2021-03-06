@@ -40,7 +40,7 @@ pyplot.show()
 (N, w, h), n_labels = train_X.shape, len(labels)
 
 # Number of datapoints
-n = 10
+n = 100
 
 # Dimension of datapoints
 d = w * h
@@ -50,7 +50,7 @@ d = w * h
 _hl = [5]                                                                     # Hidden layers
 _ol = [len(train_y[0])]                                                       # Output layers
 
-batch_size = 16                                         
+batch_size = 64                                        
 
 W, b = train.train(train_x[:n], train_y[:n], d, _hl, _ol , batch_size)
 
