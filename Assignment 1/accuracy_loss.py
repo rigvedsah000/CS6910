@@ -1,7 +1,7 @@
 import numpy as np
 import functions
 
-def predict(W, b, x, n_hl):
+def predict(W, b, x, n_hl, ac):
   a,h=[],[]
   for i in range(1, n_hl + 1):
     if i == 1:
@@ -9,7 +9,14 @@ def predict(W, b, x, n_hl):
     else:
       a =  np.dot(W[i],h) + b[i]
     
-    h = functions.logistic(a)
+    if ac == "sig":
+      h = functions.logistic(a)
+    
+    elif ac == "tanh":
+      h = functions.tanh(a)
+    
+    elif ac == "relu":
+      h = functions.ReLU(a)
   
   a = np.dot(W[n_hl+1],h ) + b[n_hl+1]
   y_pred = functions.softmax(a-max(a))
@@ -19,11 +26,11 @@ def predict(W, b, x, n_hl):
 
 
 
-def get_accuracy_and_loss(W, b, data_x, data_y, hl):
+def get_accuracy_and_loss(W, b, data_x, data_y, hl, ac):
   correct, loss = 0, 0
 
   for i in range(len(data_x)):
-    y_pred = predict(W, b, data_x[i], hl)
+    y_pred = predict(W, b, data_x[i], hl, ac)
 
     y_true = data_y[i]
 

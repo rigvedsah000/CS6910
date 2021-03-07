@@ -13,3 +13,9 @@ def softmax(x):
     num = np.exp(float(_x))
     res.append(num / denom)
   return np.array(res)
+
+def tanh(x):
+  return np.array([ np.tanh(_x) for _x in x ] )
+
+def ReLU(x):
+  return np.array( [max(0, _x) for _x in x] )

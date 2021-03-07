@@ -1,8 +1,7 @@
 import numpy as np
 import functions
 
-
-def forward_propagation(W, b, x, n_hl):
+def forward_propagation(W, b, x, n_hl, ac):
   h, a = [ [] ], [ [] ]
 
   _h, _a = [], []
@@ -13,7 +12,14 @@ def forward_propagation(W, b, x, n_hl):
     else:
       _a = np.dot( W[i], h[i - 1] ) + b[i]
 
-    _h = functions.logistic(_a)
+    if ac == "sig":
+      _h = functions.logistic(_a)
+    
+    elif ac == "tanh":
+      _h = functions.tanh(_a)
+    
+    elif ac == "relu":
+      _h = functions.ReLU(_a)
 
     a.append(_a)
     h.append(_h)
