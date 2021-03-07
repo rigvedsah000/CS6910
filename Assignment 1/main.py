@@ -11,12 +11,12 @@ n = 100
 d = w * h
 
 config = {
-    "learning_rate" : 0.0001,
+    "learning_rate" : 0.001,
     "epochs": 100,
-    "optimiser": "sgd",
+    "optimiser": "nag",
     "hidden_layers": 3,
     "hidden_layer_size": 5,
-    "ac": "relu",
+    "ac": "tanh",
     "batch_size": 32,
     "init_strategy": "random"
 }

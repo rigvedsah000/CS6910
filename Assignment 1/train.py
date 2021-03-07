@@ -1,4 +1,4 @@
-import vgd, sgd
+import vgd, sgd, mgd, nag
 
 def train(train_x, train_y, val_x, val_y, d, hl, ol, config):
 
@@ -12,8 +12,8 @@ def train(train_x, train_y, val_x, val_y, d, hl, ol, config):
   elif optimiser == "sgd":
     return sgd.sgd(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs, eta, init_strategy)
 
-  # elif optimiser == "mgd":
-  #   return mgd.mgd(train_x, train_y, hl, ol, ac, epochs, eta, init_strategy, batch_size)
+  elif optimiser == "mgd":
+    return mgd.mgd(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs, eta, init_strategy,batch_size)
 
-  # elif optimiser == "nag":
-  #   return nag.nag(train_x, train_y, hl, ol, ac, epochs, eta, init_strategy, batch_size)
+  elif optimiser == "nag":
+    return nag.nag(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs, eta, init_strategy,batch_size)
