@@ -5,20 +5,20 @@ train_X, train_Y, test_X, test_Y, labels = load_data.load_data()
 (N, w, h), n_labels = train_X.shape, len(labels)
 
 # Number of datapoints to train
-n = 100
+n = 1000
 
 # Dimension of datapoints
 d = w * h
 
 config = {
-    "learning_rate" : 0.001,
+    "learning_rate" : 0.0001,
     "epochs": 100,
-    "optimiser": "nag",
+    "optimiser": "adam",
     "hidden_layers": 3,
-    "hidden_layer_size": 5,
+    "hidden_layer_size": 32,
     "ac": "tanh",
     "batch_size": 32,
-    "init_strategy": "random"
+    "init_strategy": "xavier"
 }
 
 # Data Preprocessing

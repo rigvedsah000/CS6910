@@ -4,6 +4,8 @@ import  init_methods, forward_propagation, back_propagation, accuracy_loss
 
 def vgd(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs = 100, eta = 0.1, init_strategy = "xavier"):
 
+  print("Function Invoked: vgd")
+
   # Initialize params
   W, b =  init_methods.random_init(d, hl, ol) if init_strategy == "random" else init_methods.xavier_init(d, hl, ol)
 
