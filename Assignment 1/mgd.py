@@ -69,11 +69,7 @@ def mgd(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs, eta, init_strateg
         train_acc, train_loss =  accuracy_loss.get_accuracy_and_loss(W, b, train_x, train_y, len(hl), ac)
         val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, len(hl), ac)
 
-
-        # wandb.log( { "val loss :": val_loss } )
-        # wandb.log( { "val accuracy": val_acc } )
-        # wandb.log( { "train loss :": train_loss } )
-        # wandb.log( { "train accuracy": train_acc } )
+        # wandb.log( { "val_accuracy": val_acc, "accuracy": train_acc, "val_loss": val_loss, "loss": train_loss } )
 
         # print("\n\niteration number ",iteration," Training  Accuracy: ", train_acc, " Training Loss: ", train_loss)
         # print("\n\niteration number ",iteration," validation  Accuracy: ", val_acc, " validation Loss: ", val_loss)

@@ -11,14 +11,14 @@ n = 1000
 d = w * h
 
 config = {
-    "learning_rate" : 0.0001,
+    "learning_rate" : 0.001,
     "epochs": 100,
-    "optimiser": "adam",
+    "optimiser": "rmsprop",
     "hidden_layers": 3,
     "hidden_layer_size": 32,
     "ac": "tanh",
     "batch_size": 32,
-    "init_strategy": "xavier"
+    "init_strategy": "random"
 }
 
 # Data Preprocessing
