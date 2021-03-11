@@ -1,4 +1,4 @@
-import vgd, sgd, mgd, nag, adam , rmsprop
+import vgd, sgd, mgd, nag, adam , rmsprop, nadam
 
 def train(train_x, train_y, val_x, val_y, d, hl, ol, config):
 
@@ -23,3 +23,6 @@ def train(train_x, train_y, val_x, val_y, d, hl, ol, config):
 
   elif optimiser == "rmsprop":
     return rmsprop.rmsprop(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs, eta, init_strategy, batch_size)
+
+  elif optimiser == "nadam":
+    return nadam.nadam(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs, eta, init_strategy, batch_size)
