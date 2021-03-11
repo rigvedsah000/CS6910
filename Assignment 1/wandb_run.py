@@ -68,6 +68,9 @@ sweep_config = {
         },
         "ac": {
             "values": ["sig", "tanh", "relu"]
+        },
+         "weight_decay": {
+            "values": [0, 0.0005, 0.5]
         }
     }
 }

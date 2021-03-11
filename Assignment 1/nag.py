@@ -8,7 +8,7 @@ import random
 import wandb
 
 
-def nag(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs, eta, init_strategy,batch_size): 
+def nag(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs, eta, init_strategy,batch_size, alpha = 0): 
   
     # Initialize paramaters
     if  init_strategy  ==  "random" :
@@ -62,13 +62,13 @@ def nag(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs, eta, init_strateg
 
                 if iteration == 0:
                     for i in range(1,len(W)):
-                        W[i]=W[i]-eta*grad_W[i]
+                        W[i]=W[i]-eta*grad_W[i] - eta * alpha * W[i]
                         b[i]=b[i]-eta*grad_b[i]
-                        prev_W[i]=eta*grad_W[i]
+                        prev_W[i]=eta*grad_W[i] + eta * alpha * W[i]
                         prev_b[i]=eta*grad_b[i]
                 else:
                     for i in range(1,len(W)):
-                        prev_W[i] = gamma*prev_W[i]+eta*grad_W[i]
+                        prev_W[i] = gamma*prev_W[i]+eta*grad_W[i] + eta * alpha * W[i]
                         prev_b[i] = gamma*prev_b[i]+eta*grad_b[i]
 
                         W[i]=W[i]-prev_W[i]

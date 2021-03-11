@@ -2,7 +2,7 @@ import wandb
 import numpy as np
 import  init_methods, forward_propagation, back_propagation, accuracy_loss
 
-def sgd(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs = 100, eta = 0.1, init_strategy = "xavier", debug=False):
+def sgd(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs = 100, eta = 0.1, init_strategy = "xavier", alpha = 0):
 
   print("Function Invoked: sgd")
 
@@ -39,7 +39,7 @@ def sgd(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs = 100, eta = 0.1, 
 
       # Update weights
       for index, (_W, _gW) in enumerate(zip(W, gW)):
-        W[index] = _W - eta * np.array(_gW)
+        W[index] = _W - eta * (np.array(_gW) + alpha * _W)
 
     # Logging to WandB
       # val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, n_hl, ac)
