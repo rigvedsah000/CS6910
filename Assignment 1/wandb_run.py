@@ -45,7 +45,7 @@ def main(config = None):
   run.finish()
 
 sweep_config = {
-  "name": "Sweep 8",
+  "name": "Final Model 3",
   "method": "bayes",
   'metric': {
       'name': 'val_accuracy',
@@ -58,31 +58,31 @@ sweep_config = {
   },
   "parameters": {
         "learning_rate": {
-            "values": [0.001, 0.0001]
+            "values": [0.001]
         },
         "epochs" :{
-            "values": [5]
+            "values": [5, 10]
         },
         "hidden_layers": {
-            "values": [3, 4, 5]
+            "values": [4, 5]
         },
         "hidden_layer_size": {
             "values": [64, 128]
         },
         "optimiser": {
-            "values": ["sgd", "mgd", "nag", "rmsprop", "adam", "nadam"]
+            "values": ["adam", "rmsprop", "nadam"]
         },
         "batch_size": {
-            "values": [16, 32, 64]
+            "values": [64]
         },
         "init_strategy": {
-            "values": ["random", "xavier"]
+            "values": ["xavier"]
         },
         "ac": {
-            "values": ["sig", "tanh", "relu"]
+            "values": ["tanh", "relu", "sig"]
         },
          "weight_decay": {
-            "values": [0, 0.0005, 0.5]
+            "values": [0]
         }
     }
 }
