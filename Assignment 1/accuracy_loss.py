@@ -41,7 +41,7 @@ def get_accuracy_and_loss(W, b, data_x, data_y, hl, ac, lf):
 
     if lf == "cross_entropy":
       loss += (-np.log(y_pred[index_1] )  )
-    elif loss == "sq_loss" :
+    else:
       loss +=  np.dot( y_pred - y_true , y_pred - y_true )
 
   accuracy =  correct /len(data_x)
@@ -71,12 +71,10 @@ def get_accuracy_loss_and_prediction(W, b, data_x, data_y, hl, ac, lf):
 
     if lf == "cross_entropy":
       loss += (-np.log(y_pred[index_1] )  )
-    elif loss == "sq_loss" :
+    else:
       loss +=  np.dot( y_pred - y_true , y_pred - y_true )
 
   accuracy =  correct /len(data_x)
   average_loss = loss /len(data_x)
 
   return accuracy, average_loss, y, _y
-
-

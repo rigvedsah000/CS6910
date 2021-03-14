@@ -78,13 +78,10 @@ def nag(train_x, train_y, val_x, val_y, d, hl, ol, ac, lf, epochs, eta, init_str
                 grad_W, grad_b =  init_methods.random_init2(d,hl,ol)
 
 
-        train_acc, train_loss =  accuracy_loss.get_accuracy_and_loss(W, b, train_x, train_y, len(hl), ac, lf)
-        val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, len(hl), ac , lf)
-
         if lf == "cross_entropy":
-          wandb.log( { "val_accuracy": val_acc, "accuracy": train_acc, "val_loss": val_loss, "loss": train_loss } )
-        else:
-          wandb.log( { "val_accuracy (Squared Loss)": val_acc, "accuracy (Squared Loss)": train_acc, "val_loss (Squared Loss)": val_loss, "loss (Squared Loss)": train_loss } )
+            train_acc, train_loss =  accuracy_loss.get_accuracy_and_loss(W, b, train_x, train_y, len(hl), ac, lf)
+            val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, len(hl), ac , lf)
+            wandb.log( { "val_accuracy": val_acc, "accuracy": train_acc, "val_loss": val_loss, "loss": train_loss } )
 
         # print("\n\niteration number ",iteration," Training  Accuracy: ", train_acc, " Training Loss: ", train_loss)
         # print("\n\niteration number ",iteration," validation  Accuracy: ", val_acc, " validation Loss: ", val_loss)

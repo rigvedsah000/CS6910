@@ -8,7 +8,7 @@ train_X, train_Y, test_X, test_Y, labels = load_data.load_data()
 (N, w, h), n_labels = train_X.shape, len(labels)
 
 # Number of datapoints to train
-n = 1000
+n = 100
 
 # Dimension of datapoints
 d = w * h
@@ -26,26 +26,20 @@ def mainDebug(config = None):
 
   logConfig.logConfig(config)
 
-  # loss_functions = [ "sq_loss", "cross_entropy"]
-  # for loss_function in loss_functions:
-  #   W, b = train.train(train_x[:100], train_y[:100], val_x[:100], val_y[:100], d, hl, ol, config, loss_function)
-  #   test_acc, test_loss, y, _y = accuracy_loss.get_accuracy_loss_and_prediction(W, b, test_x[:n], test_y[:n], n_hl, config.ac, loss_function)
-  #   if loss_function == "cross_entropy":
-  #     confusion_matrix= plot.confusion_matrix(labels, y, _y)
-  #     wandb.log( { "test_accuracy": test_acc, "test_loss": test_loss ,  "Confusion Matrix": confusion_matrix  } )
-  #   else:
-  #     wandb.log( { "test_accuracy (Squared Loss)": test_acc, "test_loss (Squared Loss)": test_loss } )
-
-  W, b = train.train(train_x[:100], train_y[:100], val_x[:100], val_y[:100], d, hl, ol, config, "cross_entropy")
-  test_acc1, test_loss1, y, _y = accuracy_loss.get_accuracy_loss_and_prediction(W, b, test_x[:n], test_y[:n], n_hl, config.ac, "cross_entropy")
-
-  W, b = train.train(train_x[:100], train_y[:100], val_x[:100], val_y[:100], d, hl, ol, config, "sq_loss")
-  test_acc2, test_loss2, y, _y = accuracy_loss.get_accuracy_loss_and_prediction(W, b, test_x[:n], test_y[:n], n_hl, config.ac, "sq_loss")
-  wandb.log( { "test_accuracy": test_acc1, "test_loss": test_loss1 , "test_accuracy (Squared Loss)": test_acc2, "test_loss (Squared Loss)": test_loss2  } )
-
+  # Set Loss function here
+  loss_functions = [ "cross_entropy", "sq_loss" ]
+  
+  W, b = train.train(train_x[:n], train_y[:n], val_x[:n], val_y[:n], d, hl, ol, config, loss_functions[0])
+  test_acc, test_loss, y, _y = accuracy_loss.get_accuracy_loss_and_prediction(W, b, test_x[:n], test_y[:n], n_hl, config.ac,loss_functions[0])
   confusion_matrix= plot.confusion_matrix(labels, y, _y)
-  wandb.log( {"Confusion Matrix": confusion_matrix  } )
+  
+  if len(loss_functions) == 2:
+    W_, b_ = train.train(train_x[:n], train_y[:n], val_x[:n], val_y[:n], d, hl, ol, config, loss_functions[1])
+    test_acc_, test_loss_ = accuracy_loss.get_accuracy_and_loss(W_, b_, test_x[:n], test_y[:n], n_hl, config.ac, loss_functions[1])
+    wandb.log( { "test_accuracy": test_acc, "test_loss": test_loss , "test_accuracy (Squared Loss)": test_acc_, "test_loss (Squared Loss)": test_loss_ , "Confusion Matrix": confusion_matrix  } )
 
+  else:
+    wandb.log( { "test_accuracy": test_acc, "test_loss": test_loss }, {"Confusion Matrix": confusion_matrix  } )
 
   run.finish()
 
@@ -65,7 +59,7 @@ sweep_config = {
             "values": [0.001]
         },
         "epochs" :{
-            "values" : [10]
+            "values" : [5]
         },
         "hidden_layers": {
             "values": [5]
@@ -74,7 +68,7 @@ sweep_config = {
             "values": [128]
         },
         "optimiser": {
-            "values": ["sgd", "mgd", "nag", "rmsprop", "adam", "nadam"]
+            "values": ["nadam"]
         },
         "batch_size": {
             "values": [64]

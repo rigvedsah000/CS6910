@@ -6,7 +6,7 @@ def back_propagation(W, h, x, y, _y, n_hl, ac, lf):
   
   if lf == "cross_entropy" :
     _ga = functions.grad_a_cross_entropy(y,_y)
-  elif lf == "sq_loss" :
+  else:
     _ga = functions.grad_a_squared_loss(y,_y)
   
 

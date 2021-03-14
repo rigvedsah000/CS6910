@@ -1,7 +1,7 @@
 ### WAND Run ###
 
 import wandb
-import logConfig, load_data, accuracy_loss, train, preprocessing
+import logConfig, load_data, accuracy_loss, train, preprocessing, plot
 
 train_X, train_Y, test_X, test_Y, labels = load_data.load_data()
 
@@ -27,13 +27,20 @@ def main(config = None):
 
   logConfig.logConfig(config)
 
-  W, b = train.train(train_x, train_y, val_x, val_y, d, hl, ol, config)
-
-  test_acc, test_loss, y, _y = accuracy_loss.get_accuracy_loss_and_prediction(W, b, test_x, test_y, n_hl, config.ac,config.loss_func)
-
+  # Set Loss function here
+  loss_functions = [ "cross_entropy", "sq_loss" ]
+  
+  W, b = train.train(train_x, train_y, val_x, val_y, d, hl, ol, config, loss_functions[0])
+  test_acc, test_loss, y, _y = accuracy_loss.get_accuracy_loss_and_prediction(W, b, test_x, test_y, n_hl, config.ac,loss_functions[0])
   confusion_matrix= plot.confusion_matrix(labels, y, _y)
   
-  wandb.log( {"test_accuracy": test_acc, "test_loss": test_loss, "Confusion Matrix": confusion_matrix } )
+  if len(loss_functions) == 2:
+    W_, b_ = train.train(train_x, train_y, val_x, val_y, d, hl, ol, config, loss_functions[1])
+    test_acc_, test_loss_ = accuracy_loss.get_accuracy_and_loss(W_, b_, test_x, test_y, n_hl, config.ac, loss_functions[1])
+    wandb.log( { "test_accuracy": test_acc, "test_loss": test_loss , "test_accuracy (Squared Loss)": test_acc_, "test_loss (Squared Loss)": test_loss_ , "Confusion Matrix": confusion_matrix  } )
+
+  else:
+    wandb.log( { "test_accuracy": test_acc, "test_loss": test_loss }, {"Confusion Matrix": confusion_matrix  } )
 
   run.finish()
 

@@ -23,9 +23,6 @@ def tanh(x):
 def ReLU(x):
   return np.array( [max(0, _x) for _x in x] )
 
-
-
-
 #  Derivative of logistic , tanh  and ReLU activation function.
 
 def derivative_logistic(x):
@@ -48,8 +45,9 @@ def grad_a_cross_entropy(y_true,y_pred):
 
 
 def grad_a_squared_loss (y_true , y_pred) :
-  grad_a = ( y_pred - y_true) * y_pred *  (1 - y_pred)
-  return grad_a
+  _y_l = y_pred[np.argmax(y_true)]
+  _ga = 2 * (_y_l - 1) * _y_l * ( y_true - y_pred )
+  return _ga
 
 
 

@@ -42,13 +42,10 @@ def sgd(train_x, train_y, val_x, val_y, d, hl, ol, ac, lf, epochs = 100, eta = 0
         W[index] = _W - eta * (np.array(_gW) + alpha * _W)
 
     # Logging to WandB
-    val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, n_hl, ac, lf)
-    train_acc, train_loss = accuracy_loss.get_accuracy_and_loss(W, b, train_x, train_y, n_hl, ac, lf)
-
     if lf == "cross_entropy":
+      val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, n_hl, ac, lf)
+      train_acc, train_loss = accuracy_loss.get_accuracy_and_loss(W, b, train_x, train_y, n_hl, ac, lf)
       wandb.log( { "val_accuracy": val_acc, "accuracy": train_acc, "val_loss": val_loss, "loss": train_loss } )
-    else:
-      wandb.log( { "val_accuracy (Squared Loss)": val_acc, "accuracy (Squared Loss)": train_acc, "val_loss (Squared Loss)": val_loss, "loss (Squared Loss)": train_loss } )
 
     t += 1
 

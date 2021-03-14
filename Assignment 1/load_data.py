@@ -1,4 +1,3 @@
-from matplotlib import pyplot
 from keras.datasets import fashion_mnist
 
 def load_data():
@@ -11,28 +10,5 @@ def load_data():
 
     labels = ["T-shirt/Top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle Boot"]
 
-    # Initialize an array
-    img = [-1]*10
-    count = 0
-
-    # Save indices of images corresponding to all different labels
-    for index, label in enumerate(train_Y):
-        if img[label] == -1:
-            img[label] = index
-            count += 1
-    
-        if count == 10:
-            break
-
-    # Plotting images correpsonding to different labels
-    fig = pyplot.figure()
-    fig.set_figwidth(15)
-    fig.set_figheight(15)
-
-    for index, image_index in enumerate(img):
-        fig.add_subplot(5, 5, index + 1)
-        pyplot.imshow(train_X[image_index], cmap='gray')
-
-    pyplot.show()
-
     return train_X, train_Y, test_X, test_Y, labels
+    
