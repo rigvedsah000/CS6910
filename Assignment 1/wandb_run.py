@@ -83,10 +83,6 @@ sweep_config = {
         },
          "weight_decay": {
             "values": [0, 0.0005, 0.5]
-        },
-        "loss_func": {
-          # "cross_entropy" for cross entropy loss function and "sq_loss" for squared loss function
-            "values": ["cross_entropy"]
         }
     }
 }
