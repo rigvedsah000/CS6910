@@ -1,14 +1,14 @@
 ### WAND Debug ###
 
 import wandb
-import logConfig, load_data, accuracy_loss, train, preprocessing
+import logConfig, load_data, accuracy_loss, train, preprocessing, plot
 
 train_X, train_Y, test_X, test_Y, labels = load_data.load_data()
 
 (N, w, h), n_labels = train_X.shape, len(labels)
 
 # Number of datapoints to train
-n = 5
+n = 10000
 
 # Dimension of datapoints
 d = w * h
@@ -26,11 +26,13 @@ def mainDebug(config = None):
 
   logConfig.logConfig(config)
 
-  W, b = train.train(train_x[:n], train_y[:n], val_x[:n], val_y[:n], d, hl, ol, config)
+  W, b = train.train(train_x[:54000], train_y[:54000], val_x[:6000], val_y[:6000], d, hl, ol, config)
 
-  val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x[:n], val_y[:n], n_hl, config.ac)
+  test_acc, test_loss, y, _y = accuracy_loss.get_accuracy_loss_and_prediction(W, b, test_x[:n], test_y[:n], n_hl, config.ac)
 
-  wandb.log( { "accuracy": val_acc } )
+  confusion_matrix = plot.confusion_matrix(labels, y, _y)
+  
+  wandb.log( { "test_accuracy": test_acc, "test_loss": test_loss, "Confusion Matrix": confusion_matrix } )
 
   run.finish()
 
@@ -47,34 +49,34 @@ sweep_config = {
   },
   "parameters": {
         "learning_rate": {
-            "values": [0.001, 0.0001]
+            "values": [0.001]
         },
         "epochs" :{
-            "values" : [5, 10]
+            "values" : [10]
         },
         "hidden_layers": {
-            "values": [3, 4, 5]
+            "values": [5]
         },
         "hidden_layer_size": {
-            "values": [32, 64, 128]
+            "values": [128]
         },
         "optimiser": {
-            "values": ["sgd", "mgd", "nag"]
+            "values": ["nadam"]
         },
         "batch_size": {
-            "values": [16, 32, 64]
+            "values": [64]
         },
         "init_strategy": {
-            "values": ["random", "xavier"]
+            "values": ["xavier"]
         },
         "ac": {
-            "values": ["sig", "tanh", "relu"]
+            "values": ["tanh"]
         },
          "weight_decay": {
-            "values": [0, 0.0005, 0.5]
+            "values": [0]
         }
     }
 }
 
-sweep_id = wandb.sweep(sweep_config, project="Test")
-wandb.agent(sweep_id, mainDebug)
+sweep_id = wandb.sweep(sweep_config, project="Test 2")
+wandb.agent(sweep_id, mainDebug, count = 1)

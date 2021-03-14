@@ -45,3 +45,26 @@ def get_accuracy_and_loss(W, b, data_x, data_y, hl, ac):
   return correct /len(data_x), loss / len(data_x)
 
 
+def get_accuracy_loss_and_prediction(W, b, data_x, data_y, hl, ac):
+  correct, loss, y, _y = 0, 0, [], []
+
+  for i in range(len(data_x)):
+    y_pred = predict(W, b, data_x[i], hl, ac)
+
+    y_true = data_y[i]
+
+    index_1 = np.argmax(y_true)
+    index_2 = np.argmax(y_pred)
+
+    y.append(index_1)
+    _y.append(index_2)
+
+    if y_true[index_2] == 1:
+      correct += 1
+
+    loss += (-np.log(y_pred[index_1] )  )
+
+
+  return correct / len(data_x), loss / len(data_x), y, _y
+
+

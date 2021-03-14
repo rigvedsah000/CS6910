@@ -1,0 +1,3 @@
+Function Invoked: train
+Function Invoked: nadam
+Function Invoked: xavier init

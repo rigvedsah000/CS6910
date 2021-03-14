@@ -42,10 +42,10 @@ def vgd(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs = 100, eta = 0.1, 
        W[index] = _W - eta * (np.array(_gW) + alpha * _W)
 
   # Logging to WandB
-    # val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, n_hl, ac)
-    # train_acc, train_loss = accuracy_loss.get_accuracy_and_loss(W, b, train_x, train_y, n_hl, ac)
+  # val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, n_hl, ac)
+  # train_acc, train_loss = accuracy_loss.get_accuracy_and_loss(W, b, train_x, train_y, n_hl, ac)
 
-    # wandb.log( { "val_accuracy": val_acc, "accuracy": train_acc, "val_loss": val_loss, "loss": train_loss } )
+  # wandb.log( { "val_accuracy": val_acc, "accuracy": train_acc, "val_loss": val_loss, "loss": train_loss } )
 
     t += 1
 

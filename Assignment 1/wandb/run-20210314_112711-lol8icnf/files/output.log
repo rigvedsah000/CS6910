@@ -1,0 +1,11 @@
+Function Invoked: train
+Function Invoked: adam
+Function Invoked: xavier init
+C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\adam.py:67: VisibleDeprecationWarning:
+
+Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
+
+C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\adam.py:68: VisibleDeprecationWarning:
+
+Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
+

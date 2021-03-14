@@ -9,7 +9,7 @@ def load_data():
     print("Train: X = ", train_X.shape, ", Y = ", train_Y.shape)
     print("Test: X = ", test_X.shape, ", Y = ", test_Y.shape)
 
-    labels = ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"]
+    labels = ["T-shirt/Top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle Boot"]
 
     # Initialize an array
     img = [-1]*10

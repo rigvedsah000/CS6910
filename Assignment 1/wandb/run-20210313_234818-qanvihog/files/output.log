@@ -1,0 +1,25 @@
+Function Invoked: train
+Function Invoked: xavier init
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error resolved after 0:00:09.949987, resuming normal operation.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error resolved after 0:00:09.852247, resuming normal operation.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error resolved after 0:00:09.413020, resuming normal operation.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error resolved after 0:00:09.296751, resuming normal operation.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error resolved after 0:00:10.026345, resuming normal operation.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error resolved after 0:00:09.706999, resuming normal operation.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error resolved after 0:00:09.552211, resuming normal operation.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error resolved after 0:00:09.356787, resuming normal operation.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error (HTTPError), entering retry loop. See C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234818-qanvihog\logs\debug-internal.log for full traceback.
+wandb: Network error resolved after 0:00:10.102679, resuming normal operation.

@@ -1,0 +1,95 @@
+2021-03-13 23:41:37,433 INFO    Thread-15 :1776 [wandb_setup.py:_flush():69] setting env: {'root_dir': 'C:\\Users\\rigve\\Documents\\IITM\\Courses\\DL 6910\\Github\\CS6910\\Assignment 1', 'project': 'Assignment 1', 'run_id': 'zpeouk9m', 'sweep_param_path': 'C:\\Users\\rigve\\Documents\\IITM\\Courses\\DL 6910\\Github\\CS6910\\Assignment 1\\wandb\\sweep-imakrin1\\config-zpeouk9m.yaml', 'sweep_id': 'imakrin1'}
+2021-03-13 23:41:37,433 INFO    Thread-15 :1776 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-03-13 23:41:37,434 INFO    Thread-15 :1776 [wandb_init.py:_log_setup():334] Logging user logs to C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234137-zpeouk9m\logs\debug.log
+2021-03-13 23:41:37,434 INFO    Thread-15 :1776 [wandb_init.py:_log_setup():335] Logging internal logs to C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\wandb\run-20210313_234137-zpeouk9m\logs\debug-internal.log
+2021-03-13 23:41:37,435 INFO    Thread-15 :1776 [wandb_init.py:_jupyter_setup():285] configuring jupyter hooks <wandb.sdk.wandb_init._WandbInit object at 0x0000018D8D2B1EB0>
+2021-03-13 23:41:37,435 INFO    Thread-15 :1776 [wandb_init.py:init():367] calling init triggers
+2021-03-13 23:41:37,435 INFO    Thread-15 :1776 [wandb_init.py:init():372] wandb.init called with sweep_config: {'ac': 'relu', 'batch_size': 16, 'epochs': 5, 'hidden_layer_size': 64, 'hidden_layers': 4, 'init_strategy': 'xavier', 'learning_rate': 0.0001, 'optimiser': 'sgd', 'weight_decay': 0.0005}
+config: {}
+2021-03-13 23:41:37,435 INFO    Thread-15 :1776 [wandb_init.py:init():416] starting backend
+2021-03-13 23:41:37,435 INFO    Thread-15 :1776 [backend.py:_multiprocessing_setup():69] multiprocessing start_methods=spawn, using: spawn
+2021-03-13 23:41:37,438 INFO    Thread-15 :1776 [backend.py:ensure_launched():123] starting backend process...
+2021-03-13 23:41:37,503 INFO    Thread-15 :1776 [backend.py:ensure_launched():127] started backend process with pid: 1568
+2021-03-13 23:41:37,503 INFO    Thread-15 :1776 [wandb_init.py:init():421] backend started and connected
+2021-03-13 23:41:37,515 INFO    Thread-15 :1776 [wandb_run.py:_config_callback():733] config_cb None None {'ac': 'relu', 'batch_size': 16, 'epochs': 5, 'hidden_layer_size': 64, 'hidden_layers': 4, 'init_strategy': 'xavier', 'learning_rate': 0.0001, 'optimiser': 'sgd', 'weight_decay': 0.0005}
+2021-03-13 23:41:37,515 INFO    Thread-15 :1776 [wandb_init.py:init():461] updated telemetry
+2021-03-13 23:41:37,516 INFO    Thread-15 :1776 [wandb_init.py:init():480] communicating current version
+2021-03-13 23:41:38,672 INFO    Thread-15 :1776 [wandb_init.py:init():485] got version response 
+2021-03-13 23:41:38,672 INFO    Thread-15 :1776 [wandb_init.py:init():493] communicating run to backend with 30 second timeout
+2021-03-13 23:41:39,561 INFO    Thread-15 :1776 [wandb_init.py:init():513] run resumed
+2021-03-13 23:41:39,563 INFO    Thread-15 :1776 [wandb_init.py:init():518] starting run threads in backend
+2021-03-13 23:41:42,449 INFO    Thread-15 :1776 [wandb_run.py:_console_start():1480] atexit reg
+2021-03-13 23:41:42,450 INFO    Thread-15 :1776 [wandb_run.py:_redirect():1343] redirect: SettingsConsole.WRAP
+2021-03-13 23:41:42,450 INFO    Thread-15 :1776 [wandb_run.py:_redirect():1378] Wrapping output streams.
+2021-03-13 23:41:42,450 INFO    Thread-15 :1776 [wandb_run.py:_redirect():1394] Redirects installed.
+2021-03-13 23:41:42,450 INFO    Thread-15 :1776 [wandb_init.py:init():542] run started, returning control to user process
+2021-03-13 23:41:58,785 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:41:58,785 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:42:13,822 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:42:13,823 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:42:27,469 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:42:27,469 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:42:29,016 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:42:29,016 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:42:43,381 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:42:43,381 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:43:12,532 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:43:12,532 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:43:14,122 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:43:14,122 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:43:28,770 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:43:28,771 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:44:13,618 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:44:13,618 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:44:44,155 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:44:44,156 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:44:59,222 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:44:59,222 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:45:13,178 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:45:13,179 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:45:14,787 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:45:14,788 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:45:29,809 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:45:29,810 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:45:42,708 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:45:42,708 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:45:44,223 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:45:44,224 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:45:58,918 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:45:58,918 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:46:12,723 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:46:12,723 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:46:14,247 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:46:14,247 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:46:28,641 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:46:28,641 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:47:29,701 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:47:29,701 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:47:44,725 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:47:44,726 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:47:58,738 ERROR   Thread-10 :1776 [internal_api.py:execute():126] 429 response executing GraphQL.
+2021-03-13 23:47:58,739 ERROR   Thread-10 :1776 [internal_api.py:execute():127] {"error":"rate limit exceeded"}
+
+2021-03-13 23:48:06,217 INFO    Thread-15 :1776 [wandb_run.py:finish():1139] finishing run rigvedsah/Assignment 1/zpeouk9m

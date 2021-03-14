@@ -1,0 +1,62 @@
+Function Invoked: train
+Function Invoked: sgd
+Function Invoked: xavier init
+C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\sgd.py:33: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
+  gW = list(np.add(gW, _gW))
+C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\sgd.py:34: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
+  gb = list(np.add(gb, _gb))
+C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\accuracy_loss.py:42: RuntimeWarning: divide by zero encountered in log
+  loss += (-np.log(y_pred[index_1] )  )
+wandb: ERROR Error while calling W&B API: could not find agent cha4ptef during agentHeartbeat (<Response [404]>)
+Exception in thread Thread-10:
+Traceback (most recent call last):
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\old\retry.py", line 96, in __call__
+    result = self._call_fn(*args, **kwargs)
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\sdk\internal\internal_api.py", line 129, in execute
+    six.reraise(*sys.exc_info())
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\six.py", line 703, in reraise
+    raise value
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\sdk\internal\internal_api.py", line 123, in execute
+    return self.client.execute(*args, **kwargs)
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\vendor\gql-0.2.0\gql\client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\vendor\gql-0.2.0\gql\client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\vendor\gql-0.2.0\gql\transport\requests.py", line 39, in execute
+    request.raise_for_status()
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\requests\models.py", line 943, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 404 Client Error: Not Found for url: https://api.wandb.ai/graphql
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\sdk\internal\internal_api.py", line 1306, in agent_heartbeat
+    response = self.gql(
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\old\retry.py", line 105, in __call__
+    if not check_retry_fn(e):
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\util.py", line 711, in no_retry_auth
+    raise CommError("Permission denied to access {}".format(wandb.run.path))
+wandb.errors.error.CommError: Permission denied to access rigvedsah/Assignment 1/b8887ka6
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Program Files\Python\lib\threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "C:\Program Files\Python\lib\threading.py", line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\agents\pyagent.py", line 170, in _heartbeat
+    commands = self._api.agent_heartbeat(self._agent_id, {}, run_status)
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\apis\internal.py", line 95, in agent_heartbeat
+    return self.api.agent_heartbeat(*args, **kwargs)
+  File "C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\wandb\sdk\internal\internal_api.py", line 1317, in agent_heartbeat
+    message = ast.literal_eval(e.args[0])["message"]
+  File "C:\Program Files\Python\lib\ast.py", line 59, in literal_eval
+    node_or_string = parse(node_or_string, mode='eval')
+  File "C:\Program Files\Python\lib\ast.py", line 47, in parse
+    return compile(source, filename, mode, flags,
+  File "<unknown>", line 1
+    Permission denied to access rigvedsah/Assignment 1/b8887ka6
+               ^
+SyntaxError: invalid syntax

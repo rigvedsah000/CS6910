@@ -22,18 +22,23 @@ def main(config = None):
   ol = [len(train_y[0])]                                               # Output layers
   n_hl = len(hl)
 
+  name = "hl_" + str(config.hidden_layers) + "_bs_" + str(config.batch_size) + "_ac_" + config.ac
+  run.name = name
+
   logConfig.logConfig(config)
 
   W, b = train.train(train_x, train_y, val_x, val_y, d, hl, ol, config)
 
-  val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, n_hl, config.ac)
+  test_acc, test_loss, y, _y = accuracy_loss.get_accuracy_loss_and_prediction(W, b, test_x, test_y, n_hl, config.ac)
 
-  wandb.log( { "val_accuracy": val_acc } )
+  confusion_matrix= plot.confusion_matrix(labels, y, _y)
+  
+  wandb.log( {"test_accuracy": test_acc, "test_loss": test_loss, "Confusion Matrix": confusion_matrix } )
 
   run.finish()
 
 sweep_config = {
-  "name": "Sweep 1",
+  "name": "Sweep 8",
   "method": "bayes",
   'metric': {
       'name': 'val_accuracy',
@@ -49,7 +54,7 @@ sweep_config = {
             "values": [0.001, 0.0001]
         },
         "epochs" :{
-            "values": [5, 10]
+            "values": [5]
         },
         "hidden_layers": {
             "values": [3, 4, 5]
@@ -58,7 +63,7 @@ sweep_config = {
             "values": [64, 128]
         },
         "optimiser": {
-            "values": ["sgd", "mgd", "nag"]
+            "values": ["sgd", "mgd", "nag", "rmsprop", "adam", "nadam"]
         },
         "batch_size": {
             "values": [16, 32, 64]

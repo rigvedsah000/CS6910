@@ -1,0 +1,1 @@
+{"epochs": 5, "ac": "sig", "hidden_layers": 3, "hidden_layer_size": 128, "learning_rate": 0.001, "optimiser": "nadam", "init_strategy": "xavier", "batch_size": 32, "_runtime": 753, "_timestamp": 1615701213, "_step": 6, "val_accuracy": 0.8855, "accuracy": 0.9025555555555556, "val_loss": 0.32256927441598404, "loss": 0.2695184978944454}
