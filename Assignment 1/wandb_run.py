@@ -29,7 +29,7 @@ def main(config = None):
 
   W, b = train.train(train_x, train_y, val_x, val_y, d, hl, ol, config)
 
-  test_acc, test_loss, y, _y = accuracy_loss.get_accuracy_loss_and_prediction(W, b, test_x, test_y, n_hl, config.ac)
+  test_acc, test_loss, y, _y = accuracy_loss.get_accuracy_loss_and_prediction(W, b, test_x, test_y, n_hl, config.ac,config.loss_func)
 
   confusion_matrix= plot.confusion_matrix(labels, y, _y)
   
@@ -76,6 +76,10 @@ sweep_config = {
         },
          "weight_decay": {
             "values": [0, 0.0005, 0.5]
+        },
+        "loss_func": {
+          # "cross_entropy" for cross entropy loss function and "sq_loss" for squared loss function
+            "values": ["cross_entropy"]
         }
     }
 }

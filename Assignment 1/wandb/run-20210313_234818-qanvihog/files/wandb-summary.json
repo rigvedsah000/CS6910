@@ -1,1 +1,0 @@
-{"epochs": 5, "ac": "relu", "hidden_layers": 4, "hidden_layer_size": 128, "learning_rate": 0.001, "optimiser": "rmsprop", "init_strategy": "xavier", "batch_size": 64, "_runtime": 4197, "_timestamp": 1615663695, "_step": 6, "val_accuracy": 0.8855, "accuracy": 0.8970370370370371, "val_loss": 0.35920475257653495, "loss": 0.28508738289152163}

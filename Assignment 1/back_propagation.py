@@ -1,18 +1,14 @@
 import numpy as np
+import functions
 
-def derivative_logistic(x):
-  return x * (1 - x)
-
-def derivative_tanh(v):
-  return 1 - np.square(v)
-
-def derivative_ReLU(v):
-  return np.array([1 if v[i]>0 else 0 for i in range(len(v))])
-
-def back_propagation(W, h, x, y, _y, n_hl, ac):
+def back_propagation(W, h, x, y, _y, n_hl, ac, lf):
   gW, gb = [ [] ], [ [] ]
   
-  _ga = -1 * (y - _y)
+  if lf == "cross_entropy" :
+    _ga = functions.grad_a_cross_entropy(y,_y)
+  elif lf == "sq_loss" :
+    _ga = functions.grad_a_squared_loss(y,_y)
+  
 
   for i in range(n_hl + 1, 1, -1):
     _gW = np.outer( _ga, h[i-1] )
@@ -21,13 +17,13 @@ def back_propagation(W, h, x, y, _y, n_hl, ac):
     _gh = np.dot( np.transpose(W[i]), _ga )
 
     if ac == "sig":
-      _ga = _gh * derivative_logistic( h[i - 1] )
+      _ga = _gh * functions.derivative_logistic( h[i - 1] )
     
     elif ac == "tanh":
-      _ga = _gh * derivative_tanh( h[i - 1] )
+      _ga = _gh * functions.derivative_tanh( h[i - 1] )
     
     elif ac == "relu":
-       _ga = _gh * derivative_ReLU( h[i - 1] )
+       _ga = _gh * functions.derivative_ReLU( h[i - 1] )
 
     gW.insert(1, _gW)
     gb.insert(1, _gb)

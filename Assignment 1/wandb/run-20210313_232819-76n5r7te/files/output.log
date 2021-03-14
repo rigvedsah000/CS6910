@@ -1,9 +1,0 @@
-Function Invoked: train
-Function Invoked: nadam
-Function Invoked: xavier init
-C:\Users\rigve\AppData\Roaming\Python\Python38\site-packages\numpy\lib\function_base.py:792: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
-  return array(a, order=order, subok=subok, copy=True)
-C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\nadam.py:84: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
-  gW = np.add(gW, _gW)
-C:\Users\rigve\Documents\IITM\Courses\DL 6910\Github\CS6910\Assignment 1\nadam.py:85: VisibleDeprecationWarning: Creating an ndarray from ragged nested sequences (which is a list-or-tuple of lists-or-tuples-or ndarrays with different lengths or shapes) is deprecated. If you meant to do this, you must specify 'dtype=object' when creating the ndarray
-  gb = np.add(gb, _gb)

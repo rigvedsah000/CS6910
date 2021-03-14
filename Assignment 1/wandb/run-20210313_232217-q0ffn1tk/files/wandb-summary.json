@@ -1,1 +1,0 @@
-{"epochs": 5, "ac": "sig", "hidden_layers": 4, "hidden_layer_size": 128, "learning_rate": 0.001, "optimiser": "rmsprop", "init_strategy": "xavier", "batch_size": 64, "_runtime": 1147, "_timestamp": 1615659084, "_step": 6, "val_accuracy": 0.8875, "accuracy": 0.8917962962962963, "val_loss": 0.31653269235185083, "loss": 0.2936833542143676}

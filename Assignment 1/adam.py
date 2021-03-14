@@ -33,7 +33,7 @@ def update_adam_Wb(t, index, count, beta1, beta2, epsilon, eta, n_hl, batch_size
 
       W[index] = _W - (eta / np.sqrt(_v_W_hat + epsilon)) * _m_W_hat
 
-def adam(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs = 100, eta = 0.1, init_strategy = "xavier", batch_size = 1):
+def adam(train_x, train_y, val_x, val_y, d, hl, ol, ac, lf, epochs = 100, eta = 0.1, init_strategy = "xavier", batch_size = 1):
 
   print("Function Invoked: adam")
 
@@ -58,7 +58,7 @@ def adam(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs = 100, eta = 0.1,
       _y = h[n_hl + 1]
 
       # Backward propagation
-      _gW, _gb = back_propagation.back_propagation(W, h, x, y, _y, n_hl, ac)
+      _gW, _gb = back_propagation.back_propagation(W, h, x, y, _y, n_hl, ac, lf)
 
       if index % batch_size == 0:
         gW = _gW
@@ -79,10 +79,13 @@ def adam(train_x, train_y, val_x, val_y, d, hl, ol, ac, epochs = 100, eta = 0.1,
       update_adam_Wb(t, index, count, beta1, beta2, epsilon, eta, n_hl, batch_size, m_W, m_b, v_W, v_b, gW, gb, W, b, ac)
 
     # Logging to WandB
-    val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, n_hl, ac)
-    train_acc, train_loss = accuracy_loss.get_accuracy_and_loss(W, b, train_x, train_y, n_hl, ac)
+    val_acc, val_loss = accuracy_loss.get_accuracy_and_loss(W, b, val_x, val_y, n_hl, ac, lf)
+    train_acc, train_loss = accuracy_loss.get_accuracy_and_loss(W, b, train_x, train_y, n_hl, ac, lf)
 
-    wandb.log( { "val_accuracy": val_acc, "accuracy": train_acc, "val_loss": val_loss, "loss": train_loss } )
+    if lf == "cross_entropy":
+      wandb.log( { "val_accuracy": val_acc, "accuracy": train_acc, "val_loss": val_loss, "loss": train_loss } )
+    else:
+      wandb.log( { "val_accuracy (Squared Loss)": val_acc, "accuracy (Squared Loss)": train_acc, "val_loss (Squared Loss)": val_loss, "loss (Squared Loss)": train_loss } )
 
     t += 1
 
