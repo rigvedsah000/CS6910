@@ -1,0 +1,5 @@
+wandb/
+__pycache__/
+inaturalist_12K/
+test/
+train/
