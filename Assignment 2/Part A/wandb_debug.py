@@ -21,14 +21,16 @@ train_X, train_Y, test_X, test_Y, labels = load_data.load_data()
 # Pre-work for Augmentation
 datagen = ImageDataGenerator(
     horizontal_flip = True,
-    vertical_flip = True,
-    rotation_range = 20,
-    shear_range = 5/w,
-    width_shift_range = 5/w,
-    height_shift_range = 5/h
+    rotation_range = 40,
+    shear_range = 0.2,
+    width_shift_range = 0.2,
+    height_shift_range = 0.2
 )
 
-datagen.fit(train_x)
+filter_size = [(3, 3), (3, 3), (3, 3), (3, 3), (3, 3)]
+pool_size = [(2, 2), (2, 2), (2, 2), (2, 2), (2, 2)]
+ac = ['relu', 'relu', 'relu', 'relu', 'relu']
+n_neurons_dense = 10
 
 def mainDebug(config = None):
     run = wandb.init(config =config)
@@ -37,15 +39,11 @@ def mainDebug(config = None):
     run.name = "filters_" + str(config.filters) + "_dropout_" + str(config.dropout)
 
     num_filters = [config.filters] * 5
-    filter_size = [(3, 3), (3, 3), (3, 3), (3, 3), (3, 3)]
-    pool_size = [(2, 2), (2, 2), (2, 2), (2, 2), (2, 2)]
-    ac = ['relu', 'relu', 'relu', 'relu', 'relu']
-    n_neurons_dense = 100
     
     if config.organisation == "double":
-        for i in range(1, 5) : num_filters[i] = num_filters[i - 1] * 2
+        for i in range(1, 5) : num_filters[i] = int(num_filters[i - 1] * 2)
     elif config.organisation == "half":
-        for i in range(1, 5) : num_filters[i] = num_filters[i - 1] / 2
+        for i in range(1, 5) : num_filters[i] = int(num_filters[i - 1] / 2)
     
     print(num_filters)
 
@@ -57,7 +55,6 @@ def mainDebug(config = None):
         model.add(Activation(ac[i]))
         if config.batch_normalization == "yes" : model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size = pool_size[i]))
-        if config.batch_normalization == "yes" : model.add(BatchNormalization())
 
     model.add(Flatten())
     model.add(Dense(n_neurons_dense, activation = 'relu'))
@@ -75,12 +72,10 @@ def mainDebug(config = None):
     # Model Training
     model.fit(
         datagen.flow(train_x, to_categorical(train_y)),
-        epochs = 3,
+        epochs = 28,
         callbacks = [WandbCallback()],
         validation_data = (val_x, to_categorical(val_y))
     )
-
-    # model.save_weights('cnn.h5')
     
     run.finish()
 
@@ -101,19 +96,19 @@ sweep_config = {
 
   "parameters": {
         "filters": {
-            "values": [32, 64]
+            "values": [64]
         },
         "organisation" :{
-            "values" : ["same", "double", "half"]
+            "values" : ["double", "half"]
         },
         "augmentation": {
-            "values": ["yes", "no"]
+            "values": ["yes"]
         },
         "dropout": {
-            "values": [0.2, 0.3]
+            "values": [0.3]
         },
         "batch_normalization": {
-            "values": ["yes", "no"]
+            "values": ["yes"]
         }
     }
 }

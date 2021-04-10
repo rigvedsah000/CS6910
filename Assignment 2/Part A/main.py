@@ -17,21 +17,22 @@ train_X, train_Y, test_X, test_Y, labels = load_data.load_data()
 
 datagen = ImageDataGenerator(
     horizontal_flip = True,
-    vertical_flip = True,
-    rotation_range = 20,
-    shear_range = 5/w,
-    width_shift_range = 5/w,
-    height_shift_range = 5/h
+    rotation_range = 40,
+    shear_range = 0.2,
+    width_shift_range = 0.2,
+    height_shift_range = 0.2
 )
 
 datagen.fit(train_x)
+
+print("Height: ", h, " Width: ", w, " Depth: ", d)
 
 # Model Defination
 num_filters = [64, 64, 64, 64, 64]
 filter_size = [(3, 3), (3, 3), (3, 3), (3, 3), (3, 3)]
 pool_size = [(2, 2), (2, 2), (2, 2), (2, 2), (2, 2)]
 ac = ['relu', 'relu', 'relu', 'relu', 'relu']
-n_neurons_dense = 256
+n_neurons_dense = 128
 
 model = Sequential()
 
@@ -40,7 +41,6 @@ for i in range(5):
     model.add(Activation(ac[i]))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size = pool_size[i]))
-    model.add(BatchNormalization())
 
 model.add(Flatten())
 model.add(Dense(n_neurons_dense, activation = 'relu'))
@@ -58,8 +58,7 @@ model.compile(
 # Model Training
 model.fit(
     datagen.flow(train_x, to_categorical(train_y)),
-    epochs = 15,
+    epochs = 25,
     validation_data = (val_x, to_categorical(val_y))
 )
 
-model.save_weights('cnn.h5' )
