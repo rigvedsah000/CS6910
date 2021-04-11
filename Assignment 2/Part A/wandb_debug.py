@@ -1,6 +1,7 @@
 ### WAND Debug ###
 import numpy as np
-import wandb
+import wandb, gc
+from math import ceil
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Dense, Flatten, Dropout, BatchNormalization
@@ -8,32 +9,47 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from wandb.keras import WandbCallback
 
-import load_data, preprocessing
+import load_data
 
-# Load Data
-train_X, train_Y, test_X, test_Y, labels = load_data.load_data()
+train_data = load_data.load_train_images("train")
+(h, w, d), n_labels, batch_size, n_neurons_dense = train_data[0].shape, 10, 128, 128
 
-(h, w, d), n_labels = train_X[0].shape, len(labels)
-
-# Data Preprocessing
-(train_x, train_y), (val_x, val_y), (test_x, test_y) = preprocessing.pre_process(h, w, d, n_labels, train_X, train_Y, test_X, test_Y)
-
-# Pre-work for Augmentation
-datagen = ImageDataGenerator(
+train_datagen = ImageDataGenerator(
+    featurewise_center = True,
+    featurewise_std_normalization = True,
+    rescale = 1./255,
     horizontal_flip = True,
     rotation_range = 40,
     shear_range = 0.2,
     width_shift_range = 0.2,
-    height_shift_range = 0.2
+    height_shift_range = 0.2,
+    zoom_range = [0.5, 1.5]
 )
 
+test_datagen = ImageDataGenerator(
+    featurewise_center = True,
+    featurewise_std_normalization = True,
+    rescale = 1./255
+)
+
+train_datagen.fit(train_data)
+test_datagen.fit(train_data)
+
+del train_data
+gc.collect()
+
+train_set = train_datagen.flow_from_directory("train", target_size = (h, w), batch_size = batch_size)
+val_set = test_datagen.flow_from_directory("val", target_size = (h, w), batch_size = batch_size)
+test_set = test_datagen.flow_from_directory("test", target_size = (h, w), batch_size = batch_size)
+
+# Model Defination
+num_filters = [64, 64, 64, 64, 64]
 filter_size = [(3, 3), (3, 3), (3, 3), (3, 3), (3, 3)]
 pool_size = [(2, 2), (2, 2), (2, 2), (2, 2), (2, 2)]
 ac = ['relu', 'relu', 'relu', 'relu', 'relu']
-n_neurons_dense = 10
 
 def mainDebug(config = None):
-    run = wandb.init(config =config)
+    run = wandb.init(config = config)
     config = wandb.config
 
     run.name = "filters_" + str(config.filters) + "_dropout_" + str(config.dropout)
@@ -45,8 +61,6 @@ def mainDebug(config = None):
     elif config.organisation == "half":
         for i in range(1, 5) : num_filters[i] = int(num_filters[i - 1] / 2)
     
-    print(num_filters)
-
     # Model Defination
     model = Sequential()
 
@@ -55,6 +69,7 @@ def mainDebug(config = None):
         model.add(Activation(ac[i]))
         if config.batch_normalization == "yes" : model.add(BatchNormalization())
         model.add(MaxPooling2D(pool_size = pool_size[i]))
+        if config.batch_normalization == "yes" : model.add(BatchNormalization())
 
     model.add(Flatten())
     model.add(Dense(n_neurons_dense, activation = 'relu'))
@@ -71,10 +86,12 @@ def mainDebug(config = None):
 
     # Model Training
     model.fit(
-        datagen.flow(train_x, to_categorical(train_y)),
-        epochs = 28,
+        train_set,
+        steps_per_epoch = ceil((float) (train_set.n) / train_set.batch_size),
+        epochs = 26,
         callbacks = [WandbCallback()],
-        validation_data = (val_x, to_categorical(val_y))
+        validation_data = val_set,
+        validation_steps = ceil((float) (val_set.n) / val_set.batch_size)
     )
     
     run.finish()
@@ -96,19 +113,19 @@ sweep_config = {
 
   "parameters": {
         "filters": {
-            "values": [64]
+            "values": [32, 64]
         },
         "organisation" :{
-            "values" : ["double", "half"]
+            "values" : ["same", "double", "half"]
         },
         "augmentation": {
             "values": ["yes"]
         },
         "dropout": {
-            "values": [0.3]
+            "values": [0.3, 0.5]
         },
         "batch_normalization": {
-            "values": ["yes"]
+            "values": ["yes", "no"]
         }
     }
 }

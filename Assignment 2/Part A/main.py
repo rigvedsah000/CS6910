@@ -1,31 +1,45 @@
 import numpy as np
+import gc
+from math import ceil
+
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Dense, Flatten, Dropout, BatchNormalization
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-import load_data, preprocessing
+import load_data
 
-# Load Data
-train_X, train_Y, test_X, test_Y, labels = load_data.load_data()
+train_data = load_data.load_train_images("train", 0.2)
+(h, w, d), n_labels = train_data[0].shape, 10
 
-(h, w, d), n_labels = train_X[0].shape, len(labels)
-
-# Data Preprocessing
-(train_x, train_y), (val_x, val_y), (test_x, test_y) = preprocessing.pre_process(h, w, d, n_labels, train_X, train_Y, test_X, test_Y)
-
-datagen = ImageDataGenerator(
+train_datagen = ImageDataGenerator(
+    featurewise_center = True,
+    featurewise_std_normalization = True,
+    rescale = 1./255,
     horizontal_flip = True,
     rotation_range = 40,
     shear_range = 0.2,
     width_shift_range = 0.2,
-    height_shift_range = 0.2
+    height_shift_range = 0.2,
+    zoom_range = [0.5, 1.5]
 )
 
-datagen.fit(train_x)
+test_datagen = ImageDataGenerator(
+    featurewise_center = True,
+    featurewise_std_normalization = True,
+    rescale = 1./255
+)
 
-print("Height: ", h, " Width: ", w, " Depth: ", d)
+train_datagen.fit(train_data)
+test_datagen.fit(train_data)
+
+del train_data
+gc.collect()
+
+train_set = train_datagen.flow_from_directory("train", target_size = (h, w), batch_size = 16)
+val_set = test_datagen.flow_from_directory("val", target_size = (h, w), batch_size = 16)
+test_set = test_datagen.flow_from_directory("test", target_size = (h, w), batch_size = 16)
 
 # Model Defination
 num_filters = [64, 64, 64, 64, 64]
@@ -41,6 +55,7 @@ for i in range(5):
     model.add(Activation(ac[i]))
     model.add(BatchNormalization())
     model.add(MaxPooling2D(pool_size = pool_size[i]))
+    model.add(BatchNormalization())
 
 model.add(Flatten())
 model.add(Dense(n_neurons_dense, activation = 'relu'))
@@ -57,8 +72,9 @@ model.compile(
 
 # Model Training
 model.fit(
-    datagen.flow(train_x, to_categorical(train_y)),
-    epochs = 25,
-    validation_data = (val_x, to_categorical(val_y))
+    train_set,
+    steps_per_epoch = ceil((float) (train_set.n) / train_set.batch_size),
+    epochs = 26,
+    validation_data = val_set,
+    validation_steps = ceil((float) (val_set.n) / val_set.batch_size)
 )
-

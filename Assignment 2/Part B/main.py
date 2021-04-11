@@ -13,13 +13,36 @@ from tensorflow.keras.applications import Xception
 
 import load_data, preprocessing
 
-# Load Data
-train_X, train_Y, test_X, test_Y, labels = load_data.load_data()
+train_data = load_data.load_train_images("train")
+(h, w, d), n_labels, batch_size = train_data[0].shape, 10, 128
 
-(h, w, d), n_labels = train_X[0].shape, len(labels)
+train_datagen = ImageDataGenerator(
+    featurewise_center = True,
+    featurewise_std_normalization = True,
+    rescale = 1./255,
+    horizontal_flip = True,
+    rotation_range = 40,
+    shear_range = 0.2,
+    width_shift_range = 0.2,
+    height_shift_range = 0.2,
+    zoom_range = [0.5, 1.5]
+)
 
-# Data Preprocessing
-(train_x, train_y), (val_x, val_y), (test_x, test_y) = preprocessing.pre_process(h, w, d, n_labels, train_X, train_Y, test_X, test_Y)
+test_datagen = ImageDataGenerator(
+    featurewise_center = True,
+    featurewise_std_normalization = True,
+    rescale = 1./255
+)
+
+train_datagen.fit(train_data)
+test_datagen.fit(train_data)
+
+del train_data
+gc.collect()
+
+train_set = train_datagen.flow_from_directory("train", target_size = (h, w), batch_size = batch_size)
+val_set = test_datagen.flow_from_directory("val", target_size = (h, w), batch_size = batch_size)
+test_set = test_datagen.flow_from_directory("test", target_size = (h, w), batch_size = batch_size)
 
 def get_pre_trained_model(code, h, w, d):
     if code == 0:
@@ -41,21 +64,10 @@ new_model.compile(
     metrics = ['accuracy']
 )
 
-train_datagen = ImageDataGenerator(
-    horizontal_flip = True,
-    rotation_range = 40,
-    shear_range = 0.2,
-    width_shift_range = 0.2,
-    height_shift_range = 0.2
-)
-
-val_datagen = ImageDataGenerator()
-
-train_set = train_datagen.flow(train_x, to_categorical(train_y))
-val_set = val_datagen.flow(val_x, to_categorical(val_y))
-
 new_model.fit(
     train_set,
-    epochs = 15,
-    validation_data = val_set
+    steps_per_epoch = ceil((float) (train_set.n) / train_set.batch_size),
+    epochs = 25,
+    validation_data = val_set,
+    validation_steps = ceil((float) (val_set.n) / val_set.batch_size)
 )

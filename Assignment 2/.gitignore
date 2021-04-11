@@ -3,4 +3,5 @@ __pycache__/
 inaturalist_12K/
 test/
 train/
+val/
 cnn.h5

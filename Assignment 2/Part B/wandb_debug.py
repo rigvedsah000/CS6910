@@ -1,6 +1,6 @@
 ### WAND Debug ###
-import numpy as np
-import wandb
+import wandb, numpy as np
+from math import ceil
 from wandb.keras import WandbCallback
 from tensorflow import keras
 from tensorflow.keras.models import Sequential, Model
@@ -14,47 +14,48 @@ from tensorflow.keras.applications import InceptionV3
 from tensorflow.keras.applications import InceptionResNetV2
 from tensorflow.keras.applications import ResNet50
 from tensorflow.keras.applications import Xception
-import load_data, preprocessing
 
-# Load Data
-train_X, train_Y, test_X, test_Y, labels = load_data.load_data()
-
-(h, w, d), n_labels = train_X[0].shape, len(labels)
-
-# Data Preprocessing
-(train_x, train_y), (val_x, val_y), (test_x, test_y) = preprocessing.pre_process(h, w, d, n_labels, train_X, train_Y, test_X, test_Y)
-
-def get_pre_trained_model(code, h, w, d):
-    if code == "inception_v3":
-        return InceptionV3(input_shape = (h, w, d), weights = "imagenet", include_top = False)
-    elif code == "inception_resnet_v2":
-        return InceptionResNetV2(input_shape = (h, w, d), weights = "imagenet", include_top = False)
-    elif code == "resnet_50":
-       return ResNet50(input_shape = (h, w, d), weights = "imagenet", include_top = False)
-    elif code == "xception":
-        return Xception(input_shape = (h, w, d), weights = "imagenet", include_top = False)
+#############################
+# Set Parameters Here
+############################
+(h, w, d), n_labels, batch_size = (100, 100, 3), 10, 128
 
 train_datagen = ImageDataGenerator(
+    rescale = 1./255,
     horizontal_flip = True,
     rotation_range = 40,
     shear_range = 0.2,
     width_shift_range = 0.2,
-    height_shift_range = 0.2
+    height_shift_range = 0.2,
+    zoom_range = [0.5, 1.5]
 )
 
-test_datagen = ImageDataGenerator()
+test_datagen = ImageDataGenerator(
+    rescale = 1./255
+)
 
-train_set = train_datagen.flow(train_x, to_categorical(train_y))
-val_set = test_datagen.flow(val_x, to_categorical(val_y))
-test_set = test_datagen.flow(test_x, to_categorical(test_y))
+train_set = train_datagen.flow_from_directory("train", target_size = (h, w), batch_size = batch_size)
+val_set = test_datagen.flow_from_directory("val", target_size = (h, w), batch_size = batch_size)
+test_set = test_datagen.flow_from_directory("test", target_size = (h, w), batch_size = batch_size)
+
+
+def get_pre_trained_model(code, h, w, d):
+    if code == "inception_v3":
+        return InceptionV3(input_shape = (h, w, d), weights = "imagenet", include_top = False), [12, 17]
+    elif code == "inception_resnet_v2":
+        return InceptionResNetV2(input_shape = (h, w, d), weights = "imagenet", include_top = False), [2, 4]
+    elif code == "resnet_50":
+       return ResNet50(input_shape = (h, w, d), weights = "imagenet", include_top = False), [4, 7]
+    elif code == "xception":
+        return Xception(input_shape = (h, w, d), weights = "imagenet", include_top = False), [3, 6]
 
 def mainDebug(config = None):
     run = wandb.init(config = config)
     config = wandb.config
 
-    run.name = "model_" + str(config.model) + "_trainable_layers_" + str(config.trainable_layers)
+    run.name = "model_" + str(config.model) + "_trainable_conv_layers_" + str(config.trainable_conv_layers)
 
-    model = get_pre_trained_model(config.model, h, w, d)
+    model, conv_layers = get_pre_trained_model(config.model, h, w, d)
     
     model.trainable = False
     
@@ -70,22 +71,24 @@ def mainDebug(config = None):
 
     new_model.fit(
         train_set,
-        epochs = 10,
+        steps_per_epoch = ceil((float) (train_set.n) / train_set.batch_size),
+        epochs = 25,
         callbacks = [WandbCallback()],
         validation_data = val_set,
-    )
+        validation_steps = ceil((float) (val_set.n) / val_set.batch_size)
+        )
 
-    if config.trainable_layers == 1:
-        print("Training Layer(s): ", config.trainable_layers)
+    if config.trainable_conv_layers == 0:
+        print("Training Layer(s): ", config.trainable_conv_layers)
 
     else:
 
-        if config.trainable_layers == -1:
-            print("Training Layer(s): ", config.trainable_layers)
+        if config.trainable_conv_layers == -1:
+            print("Training Layer(s): ", config.trainable_conv_layers)
             model.trainable = True
         else:
-            print("Training Layer(s): ", config.trainable_layers)
-            for layer in model.layers[len(model.layers) - 12 : ]:
+            print("Training Layer(s): ", config.trainable_conv_layers)
+            for layer in model.layers[len(model.layers) - conv_layers[config.trainable_conv_layers - 1] : ]:
                 layer.trainable = True
         
         print(new_model.summary())
@@ -97,14 +100,14 @@ def mainDebug(config = None):
         )
 
         new_model.fit(
-           train_set,
-           epochs = 10,
-           callbacks = [WandbCallback()],
-           validation_data = val_set
-        )
-    
-    # new_model.predict(test_set, callbacks = [WandbCallback()])
-    
+            train_set,
+            steps_per_epoch = ceil((float) (train_set.n) / train_set.batch_size),
+            epochs = 25,
+            callbacks = [WandbCallback()],
+            validation_data = val_set,
+            validation_steps = ceil((float) (val_set.n) / val_set.batch_size)
+            )
+       
     run.finish()
 
 sweep_config = {
@@ -126,8 +129,8 @@ sweep_config = {
         "model": {
             "values": ["inception_v3"]
         },
-        "trainable_layers" : {
-            "values" : [3]
+        "trainable_conv_layers" : {
+            "values" : [2]
         }
     }
 }
