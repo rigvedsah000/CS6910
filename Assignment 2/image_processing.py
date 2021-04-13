@@ -1,11 +1,41 @@
 import os, os.path, cv2, random
 from math import ceil
+import os , shutil
 
 def resize_train(height, width):
     path = "inaturalist_12K/train"
+    
+    # Create folder if not exists
+    if (os.path.exists("train")):
+        directory = 1
+    else:
+        os.makedirs("train")
 
-    os.mkdir(os.path.join("train"))
-    os.mkdir(os.path.join("val"))
+
+    if (os.path.exists("val")):
+        directory = 1
+    else:
+        os.makedirs("val")
+        
+     
+    # To clean the folder for storing the files 
+    for files in os.listdir("train"):
+        loc = os.path.join("train", files)
+        try:
+            shutil.rmtree(loc)
+        except OSError:
+            os.remove(loc) 
+
+    for files in os.listdir("val"):
+        loc = os.path.join("val", files)
+        try:
+            shutil.rmtree(loc)
+        except OSError:
+            os.remove(loc) 
+
+
+    # os.mkdir(os.path.join("train"))
+    # os.mkdir(os.path.join("val"))
 
     for d in os.listdir(path):
         
@@ -52,7 +82,20 @@ def resize_train(height, width):
 def resize_test(height, width):
     path = "inaturalist_12K/val"
 
-    os.mkdir(os.path.join("test"))
+    if (os.path.exists("test")):
+        directory = 1
+    else:
+        os.makedirs("test")
+
+
+    for files in os.listdir("test"):
+        loc = os.path.join("test", files)
+        try:
+            shutil.rmtree(loc)
+        except OSError:
+            os.remove(loc)
+            
+    # os.mkdir(os.path.join("test"))
 
     for d in os.listdir(path):
         
@@ -76,4 +119,4 @@ def resize(height, width):
     resize_train(height, width)
     resize_test(height, width)
 
-resize(250, 250)
+resize(100, 100)
