@@ -129,7 +129,7 @@ for files in os.listdir("frames"):
         os.remove(path)
 
         
-video_path = "videos/video_4.mp4"
+video_path = "videos/Cows on Highways.mp4"
 start_video(video_path)  
 cv2.destroyAllWindows() 
     

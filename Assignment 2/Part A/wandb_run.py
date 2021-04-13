@@ -9,9 +9,9 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from wandb.keras import WandbCallback
 
-import load_data
+import load_data, plot
 
-train_data = load_data.load_train_images("train")
+train_data, labels = load_data.load_train_images("train")
 (h, w, d), n_labels, batch_size, n_neurons_dense = train_data[0].shape, 10, 128, 128
 
 train_datagen = ImageDataGenerator(
@@ -40,7 +40,7 @@ gc.collect()
 
 train_set = train_datagen.flow_from_directory("train", target_size = (h, w), batch_size = batch_size)
 val_set = test_datagen.flow_from_directory("val", target_size = (h, w), batch_size = batch_size)
-test_set = test_datagen.flow_from_directory("test", target_size = (h, w), batch_size = batch_size)
+test_set = test_datagen.flow_from_directory("test", target_size = (h, w), batch_size = 1)
 
 # Model Defination
 num_filters = [64, 64, 64, 64, 64]
@@ -93,11 +93,26 @@ def main(config = None):
         validation_data = val_set,
         validation_steps = ceil((float) (val_set.n) / val_set.batch_size)
     )
+
+    l = 2000
+    y  = []
+    _y = []
+
+    for i in range(l):
+        y.append(test_set[i][1][0].argmax())
+
+    _y = model.predict(test_set).argmax(axis = 1)
+
+    test_acc = sum([_y[i] == y[i] for i in range(l)]) / l
+
+    confusion_matrix= plot.confusion_matrix(labels, y, _y)
+
+    wandb.log( { "test_accuracy": test_acc, "Confusion Matrix": confusion_matrix  } )
     
     run.finish()
 
 sweep_config = {
-  "name": "Sweep 4",
+  "name": "Test Sweep",
 
   "method": "bayes",
 
@@ -113,22 +128,22 @@ sweep_config = {
 
   "parameters": {
         "filters": {
-            "values": [32, 64]
+            "values": [64]
         },
         "organisation" :{
-            "values" : ["same", "double", "half"]
+            "values" : ["double"]
         },
         "augmentation": {
             "values": ["yes"]
         },
         "dropout": {
-            "values": [0.3, 0.5]
+            "values": [0.2]
         },
         "batch_normalization": {
-            "values": ["yes", "no"]
+            "values": ["yes"]
         }
     }
 }
 
 sweep_id = wandb.sweep(sweep_config, project="Assignment 2")
-wandb.agent(sweep_id, project="Assignment 2", function=main)
+wandb.agent(sweep_id, project="Assignment 2", function=main, count = 1)

@@ -5,3 +5,10 @@ test/
 train/
 val/
 cnn.h5
+.ipynb_checkpoints/
+Part C DL Assignment 2.ipynb
+frames/
+videos/
+captioned_video.mp4
+Untitled.ipynb
+yolov3.weights

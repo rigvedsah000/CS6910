@@ -23,4 +23,4 @@ def load_train_images(path, sampling_factor = 1):
                 a[i] = 1
                 sample_count += 1
 
-    return np.array(data)
+    return np.array(data), ["Amphibia", "Animalia", "Arachnida", "Aves", "Fungi", "Insecta", "Mammalia", "Mollusca", "Plantae", "Reptilia"]
