@@ -1,6 +1,6 @@
 ### WAND Run ###
 import numpy as np
-import wandb, gc
+import wandb, gc, os
 from math import ceil
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
@@ -48,11 +48,46 @@ filter_size = [(3, 3), (3, 3), (3, 3), (3, 3), (3, 3)]
 pool_size = [(2, 2), (2, 2), (2, 2), (2, 2), (2, 2)]
 ac = ['relu', 'relu', 'relu', 'relu', 'relu']
 
+def process_test_data(model, n = 30):
+
+    l, y, _y = 2000, [], []
+
+    for i in range(l):
+        y.append(test_set[i][1][0].argmax())
+
+    _y = model.predict(test_set).argmax(axis = 1)
+
+    test_acc = sum([_y[i] == y[i] for i in range(l)]) / l
+
+    confusion_matrix= plot.confusion_matrix(labels, y, _y)
+
+    wandb.log( { "test_accuracy": test_acc, "Confusion Matrix": confusion_matrix  } )
+
+    images, classes  = [], []
+
+    for i in range(n):
+        files = os.listdir("test")
+        folder_selected = files[random.randrange(0, len(files))]
+        snaps = os.listdir("test/" + folder_selected)
+        snap_selected = snaps[random.randrange(0, len(snaps))]
+
+        img = cv2.imread("test/" + folder_selected + "/" + snap_selected)
+        
+        images.append(img)
+        classes.append(folder_selected)
+
+    test_set_visualized = test_datagen.flow(np.array(images), batch_size = 1, shuffle = False)
+
+    predicted_labels = [ labels[i] for i in model.predict(test_set_visualized).argmax(axis = 1) ]
+
+    wandb.log({ "Sample Test Images" : [ wandb.Image(images[i], caption = "True Label: " + classes[i] + ", Predicted Label: " + predicted_labels[i]) for i in range(n) ] })
+
+
 def main(config = None):
     run = wandb.init(config = config)
     config = wandb.config
 
-    run.name = "filters_" + str(config.filters) + "_dropout_" + str(config.dropout)
+    run.name = "filters_" + str(config.filters) + "dropout" + str(config.dropout)
 
     num_filters = [config.filters] * 5
     
@@ -94,25 +129,16 @@ def main(config = None):
         validation_steps = ceil((float) (val_set.n) / val_set.batch_size)
     )
 
-    l = 2000
-    y  = []
-    _y = []
+#     model.save("my_model.h5")
 
-    for i in range(l):
-        y.append(test_set[i][1][0].argmax())
-
-    _y = model.predict(test_set).argmax(axis = 1)
-
-    test_acc = sum([_y[i] == y[i] for i in range(l)]) / l
-
-    confusion_matrix= plot.confusion_matrix(labels, y, _y)
-
-    wandb.log( { "test_accuracy": test_acc, "Confusion Matrix": confusion_matrix  } )
+    process_test_data(model)
     
     run.finish()
 
+    
+
 sweep_config = {
-  "name": "Test Sweep",
+  "name": "Test Sweep 1",
 
   "method": "bayes",
 

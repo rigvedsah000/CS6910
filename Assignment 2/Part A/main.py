@@ -8,9 +8,9 @@ from tensorflow.keras.layers import Conv2D, MaxPooling2D, Activation, Dense, Fla
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-import load_data
+import load_data, plot
 
-train_data = load_data.load_train_images("train")
+train_data, labels = load_data.load_train_images("train")
 (h, w, d), n_labels, batch_size, n_neurons_dense = train_data[0].shape, 10, 128, 128
 
 train_datagen = ImageDataGenerator(
@@ -47,6 +47,19 @@ filter_size = [(3, 3), (3, 3), (3, 3), (3, 3), (3, 3)]
 pool_size = [(2, 2), (2, 2), (2, 2), (2, 2), (2, 2)]
 ac = ['relu', 'relu', 'relu', 'relu', 'relu']
 
+def process_test_data(model, n = 30):
+
+    l, y, _y = 2000, [], []
+
+    for i in range(l):
+        y.append(test_set[i][1][0].argmax())
+
+    _y = model.predict(test_set).argmax(axis = 1)
+
+    test_acc = sum([_y[i] == y[i] for i in range(l)]) / l
+
+    confusion_matrix= plot.confusion_matrix(labels, y, _y)
+
 model = Sequential()
 
 for i in range(5):
@@ -77,3 +90,7 @@ model.fit(
     validation_data = val_set,
     validation_steps = ceil((float) (val_set.n) / val_set.batch_size)
 )
+        
+model.save("my_model.h5")
+
+process_test_data(model)

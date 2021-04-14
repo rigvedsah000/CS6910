@@ -100,6 +100,8 @@ def main(config = None):
             validation_data = val_set,
             validation_steps = ceil((float) (val_set.n) / val_set.batch_size)
             )
+
+    #new_model.save('my_model.h5')
        
     run.finish()
 
