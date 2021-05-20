@@ -1,3 +1,4 @@
+import random
 import pandas as pd
 import numpy as np
 from tensorflow.keras.preprocessing.text import one_hot
@@ -20,6 +21,8 @@ def load_data_prediction():
 
     input_characters = set()
     target_characters = set()
+    input_characters.add(' ')
+    target_characters.add(' ')
 
     for train_word in train_input_words:
         for char in train_word:

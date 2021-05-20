@@ -1,39 +1,99 @@
 import numpy as np
 from tensorflow import keras
+from keras.utils.vis_utils import plot_model
 
 import load_data
 
-def infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index):
+
+
+# Function to calculate indexes of layers (useful in inference function)
+def func( model, enc_latent_dims, cell_type ):
+    n_enc_layer = len(enc_latent_dims)
+
+    e_emb_index, d_emb_index = -1,-1
+    e_cell_index, d_cell_index = [],[]
+    dense_index = -1;
+
+    celltype = cell_type[0]
+
+    e_celllayer_count = 0
+    print("cell type is :",celltype)
+    for i,layer in enumerate(model.layers):
+
+        # Dense Layer
+        if "dense" in layer.name : dense_index = i
+
+        # Embedding layer
+        if "embedding" in layer.name :
+            if e_emb_index == -1 : e_emb_index = i
+            else : d_emb_index = i
+
+        # Lstm layer 
+        if celltype in layer.name :
+            if e_celllayer_count  < n_enc_layer :
+                e_cell_index.append(i)
+                e_celllayer_count += 1
+            else : d_cell_index.append(i)
+
+    return e_emb_index, d_emb_index, e_cell_index, d_cell_index, dense_index
+
+
+
+
+
+
+# Inference Function
+def infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index,  enc_latent_dims, dec_latent_dims, cell_type):
     
     # Configuration
     batch_size = 128
     epochs = 20
     latent_dim = 256
 
-    model = keras.models.load_model("seq2seq_2")
+    model = keras.models.load_model("seq2seq")
 
     print(model.summary())
 
+
+    e_emb_index, d_emb_index, e_cell_index, d_cell_index, dense_index = func( model, enc_latent_dims, cell_type )
+
+
+    # Encoder
+
     encoder_inputs = model.input[0]  # input_1
-    encoder_outputs, state_h_enc, state_c_enc = model.layers[4].output  # lstm_1
-    encoder_states = [state_h_enc, state_c_enc]
-    encoder_model = keras.Model(encoder_inputs, encoder_states)
+    encoder_outputs, state_h_enc, state_c_enc = model.layers[e_cell_index[-1]].output
+
+
+    # Final encoder model
+    encoder_model = keras.Model(encoder_inputs, [state_h_enc, state_c_enc])
+
 
     decoder_inputs = model.input[1]  # input_2
-    decoder_embedded_inputs = model.layers[3].output
-    decoder_state_input_h = keras.Input(shape=(latent_dim,), name = "input_3")
-    decoder_state_input_c = keras.Input(shape=(latent_dim,), name = "input_4")
-    decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
-    decoder_lstm = model.layers[5]
-    decoder_outputs, state_h_dec, state_c_dec = decoder_lstm(
-        decoder_embedded_inputs, initial_state = decoder_states_inputs
-    )
-    decoder_states = [state_h_dec, state_c_dec]
-    decoder_dense = model.layers[6]
+    decoder_outputs =  model.layers[d_emb_index](decoder_inputs)
+
+    decoder_states_inputs =  []
+    decoder_states = []
+
+
+
+    # Decoder LSTM
+    for dec in range(len(d_cell_index)):
+        state_h_dec, state_c_dec = keras.Input(shape = (dec_latent_dims[dec],)),  keras.Input(shape = (dec_latent_dims[dec],))
+        current_states_inputs = [state_h_dec,state_c_dec]
+        decoder_outputs, state_h_dec,state_c_dec = model.layers[d_cell_index[dec]](decoder_outputs, initial_state=current_states_inputs)
+        decoder_states += [state_h_dec,state_c_dec]
+        decoder_states_inputs += current_states_inputs
+
+    # Dense layer
+    decoder_dense = model.layers[dense_index]
     decoder_outputs = decoder_dense(decoder_outputs)
+
+
+    # Final decoder model
     decoder_model = keras.Model(
         [decoder_inputs] + decoder_states_inputs, [decoder_outputs] + decoder_states
     )
+
 
     def decode_sequence(input_seq):
         # Encode the input as state vectors.
@@ -69,8 +129,8 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
             states_value = [h, c]
         return decoded_sentence
 
-    count = 0
 
+    count = 0
     for seq_index in range(20):
         # Take one sequence (part of the training set)
         # for trying out decoding.

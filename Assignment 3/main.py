@@ -8,27 +8,47 @@ import load_data, inference
 
 # Configuration
 batch_size = 128
-epochs = 10
-latent_dim = 256
-embedding_size = 16
+epochs = 1
+embedding_size = 256
+enc_latent_dims = [64,128,256]
+dec_latent_dims  = [256]
+cell_type = ["lstm","lstm","lstm"]
+DROPOUT = 0                                         # Dropout in lstm layers
+
 
 # Encoder
 encoder_inputs = keras.Input(shape = (None, ))
-encoder_embedded_inputs = keras.layers.Embedding(input_dim = num_encoder_characters, output_dim = embedding_size, input_length = max_encoder_seq_length)(encoder_inputs)
-encoder = keras.layers.LSTM(latent_dim, return_state = True)
-encoder_outputs, state_h, state_c = encoder(encoder_embedded_inputs)
+encoder_outputs = keras.layers.Embedding(input_dim = num_encoder_characters, output_dim = embedding_size, input_length = max_encoder_seq_length)(encoder_inputs)
 
-# We discard `encoder_outputs` and only keep the states.
-encoder_states = [state_h, state_c]
+# Encoder LSTM layers
+encoder_states = list()
+for j in range(len(enc_latent_dims)):
+    if cell_type[j] == "lstm" :
+        encoder_outputs, state_h, state_c = keras.layers.LSTM(enc_latent_dims[j],dropout=DROPOUT, recurrent_dropout=0, return_state=True, return_sequences=True)(encoder_outputs)
+        encoder_states = [state_h,state_c]
+
+
 
 # Decoder
 decoder_inputs = keras.Input(shape=(None, ))
-decoder_embedded_inputs = keras.layers.Embedding(input_dim = num_decoder_characters, output_dim = embedding_size, input_length = max_decoder_seq_length)(decoder_inputs)
+decoder_outputs = keras.layers.Embedding(input_dim = num_decoder_characters, output_dim = embedding_size, input_length = max_decoder_seq_length)(decoder_inputs)
+
 # We set up our decoder to return full output sequences,
 # and to return internal states as well. We don't use the
 # return states in the training model, but we will use them in inference.
-decoder = keras.layers.LSTM(latent_dim, return_sequences = True, return_state = True)
-decoder_outputs, _, _ = decoder(decoder_embedded_inputs, initial_state = encoder_states)
+
+
+
+decoder_states = encoder_states.copy()
+
+for j in range(len(dec_latent_dims)):
+
+    if cell_type[j] == "lstm" :
+        decoder = keras.layers.LSTM(dec_latent_dims[j], dropout=DROPOUT, recurrent_dropout=0, return_sequences=True, return_state=True)
+        decoder_outputs, state_h, state_c = decoder(decoder_outputs, initial_state=decoder_states)
+        decoder_states = [state_h, state_c]
+
+
 decoder_dense = keras.layers.Dense(num_decoder_characters, activation = "softmax")
 decoder_outputs = decoder_dense(decoder_outputs)
 
@@ -48,7 +68,8 @@ model.fit(
     validation_data = ([encoder_val_input_data, decoder_val_input_data], decoder_val_target_data),
 )
 
+
 # Save model
 model.save("seq2seq")
 
-inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index)
+inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type)
