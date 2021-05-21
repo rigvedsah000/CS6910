@@ -1,8 +1,5 @@
-import random
 import pandas as pd
 import numpy as np
-from tensorflow.keras.preprocessing.text import one_hot
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 def load_data_prediction():
 
@@ -21,6 +18,7 @@ def load_data_prediction():
 
     input_characters = set()
     target_characters = set()
+
     input_characters.add(' ')
     target_characters.add(' ')
 
@@ -28,12 +26,12 @@ def load_data_prediction():
         for char in train_word:
             input_characters.add(char)
 
-    for test_word in val_input_words:
-        for char in test_word:
+    for val_word in val_input_words:
+        for char in val_word:
             input_characters.add(char)
 
-    for val_word in test_input_words:
-        for char in val_word:
+    for test_word in test_input_words:
+        for char in test_word:
             input_characters.add(char)
 
     for train_word in train_target_words:
@@ -72,7 +70,7 @@ def load_data_prediction():
     inverse_target_characters_index = dict((i, char) for char, i in target_characters_index.items())
 
     encoder_train_input_data = np.zeros(
-    (len(train_input_words), max_encoder_seq_length), dtype="float32"
+        (len(train_input_words), max_encoder_seq_length), dtype="float32"
     )
     decoder_train_input_data = np.zeros(
         (len(train_input_words), max_decoder_seq_length), dtype="float32"
@@ -82,7 +80,7 @@ def load_data_prediction():
     )
 
     encoder_val_input_data = np.zeros(
-    (len(val_input_words), max_encoder_seq_length), dtype="float32"
+        (len(val_input_words), max_encoder_seq_length), dtype="float32"
     )
     decoder_val_input_data = np.zeros(
         (len(val_input_words), max_decoder_seq_length), dtype="float32"
@@ -92,7 +90,7 @@ def load_data_prediction():
     )
 
     encoder_test_input_data = np.zeros(
-    (len(test_input_words), max_encoder_seq_length), dtype="float32"
+        (len(test_input_words), max_encoder_seq_length), dtype="float32"
     )
 
     for i, (input_word, target_word) in enumerate(zip(train_input_words, train_target_words)):
@@ -129,4 +127,4 @@ def load_data_prediction():
         encoder_test_input_data[i, t + 1 :] = input_characters_index[' ']
 
 
-    return (encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (target_characters_index, inverse_target_characters_index)  
+    return (encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (val_input_words, val_target_words), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (target_characters_index, inverse_target_characters_index)  
