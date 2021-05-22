@@ -32,7 +32,7 @@ def get_layer_index(model, enc_latent_dims, cell_type):
     return e_emb_index, d_emb_index, e_cell_index, d_cell_index, dense_index
 
 # Inference Function
-def infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type):
+def infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type, beam_size):
     
     model = keras.models.load_model("seq2seq")
 
@@ -105,7 +105,9 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
             # Sample a token
             sampled_token_index = np.argmax(output_tokens[0, -1, :])
+
             sampled_char = inverse_target_characters_index[sampled_token_index]
+
             decoded_sentence += sampled_char
 
             if sampled_char == "\n" or len(decoded_sentence) > max_decoder_seq_length:
@@ -116,19 +118,85 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
         return decoded_sentence
 
-    count, test_size = 0, len(test_input_words)
 
-    for seq_index in range(test_size):
-        # Take one sequence (part of the training set)
-        # for trying out decoding.
+    def beam_search_decoder(input_seq, k):
+        # Encode the input as state vectors.
+        states_value = [encoder_model.predict(input_seq)] * len(d_cell_index)
+
+        # Generate empty target sequence of length 1.
+        target_seq = np.zeros(( 1, 1))
+
+        # Populate the first character of target sequence with the start character.
+        target_seq[0, 0 ] = target_characters_index["\t"]
+        
+        stop_condition = False
+        decoded_sentence = ""
+
+        # probabibility of sequence(prob), flag for end of word(eow), states_value, target_seq, sequence_token, sequence_in_word
+        sequences = [[0.0, 0, states_value, target_seq,  list(),list()]]
+
+        while not stop_condition:
+
+            all_candidates = list()
+            for i in range(len(sequences)):
+              output = decoder_model.predict([sequences[i][3]] + sequences[i][2])
+              output_tokens, states_value = output[0], output[1:]
+              prob = output_tokens[0,-1,:]
+              
+              score, eow, sv, t_seq, seq, d_word = sequences[i]
+              if eow == 0:
+                for j in range(len(inverse_target_characters_index)):
+                  char = inverse_target_characters_index[j]
+
+                  target_seq = np.zeros((1, 1))
+                  target_seq[0, 0] = j
+
+                  candidate = [score - np.log(prob[j]), 0, states_value, target_seq,  seq + [j] , d_word + [char] ]
+                  all_candidates.append(candidate)
+            
+            
+            ordered = sorted(all_candidates, key=lambda x:x[0])
+
+            minlen = min(k, len(ordered))
+
+            sequences = ordered[:minlen]
+
+            stop_condition = True
+            for sequence in range(len(sequences)):
+                score, eow, sv, t_seq, seq, d_word = sequences[sequence]
+
+                if d_word[-1] == "\n": eow = 1
+
+                if len(d_word) > max_decoder_seq_length : eow = 1
+
+                sequences[sequence] = [score, eow, sv, t_seq, seq, d_word].copy()
+
+                if eow == 0: stop_condition = False
+
+            if sequences[0][-1][-1]=="\n": stop_condition = True
+
+        best_possible_decoded_sentence = ''.join(sequences[0][5])
+
+        return best_possible_decoded_sentence
+
+
+    count, test_size = 0, 20               #len(test_input_words)
+
+    for seq_index in range(test_size):        
         input_seq = encoder_test_input_data[seq_index : seq_index + 1]
-        decoded_word = decode_sequence(input_seq)
-        print("-")
+
+        '''  Call to Simple Decode Sequence  '''
+        # decoded_word = decode_sequence(input_seq)
+        
+        '''  Call to Beam Search Decoder  '''
+        decoded_word = beam_search_decoder(input_seq, beam_size)
+
         print("Input sentence:", test_input_words[seq_index])
         print("Decoded sentence:", decoded_word[:-1])
         orig_word = test_target_words[seq_index][1:]
         print("Original sentence:", orig_word[:-1])
-
+        
+        print("-")
         if(orig_word == decoded_word): count += 1
 
     return count / test_size

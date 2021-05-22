@@ -7,14 +7,14 @@ import load_data, inference
 (encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (val_input_words, val_target_words), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (target_characters_index, inverse_target_characters_index) = load_data.load_data_prediction()
 
 # Configuration
-batch_size = 512
-epochs = 25
+batch_size = 128
+epochs = 1
 embedding_size = 256
 enc_latent_dims = [256] * 1
 dec_latent_dims  = [256] * 1
-cell_type = "gru"
+cell_type = "lstm"
 dropout = 0.3
-
+beam_size = 2
 # Encoder
 encoder_inputs = keras.Input(shape = (None, ))
 encoder_outputs = keras.layers.Embedding(input_dim = num_encoder_characters, output_dim = embedding_size, input_length = max_encoder_seq_length)(encoder_inputs)
@@ -78,9 +78,9 @@ model.fit(
 model.save("seq2seq")
 
 # Inference Call for Validation Data
-val_accuracy = inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type)
+val_accuracy = inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type, beam_size)
 print("Val Accuracy: ", val_accuracy)
 
 # Inference Call for Test Data
-# test_accuracy = inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type)
+# test_accuracy = inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type, beam_size)
 # print("Test Accuracy: ", test_accuracy)
