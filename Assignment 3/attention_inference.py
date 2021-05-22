@@ -1,8 +1,11 @@
 import numpy as np
 from tensorflow import keras
+from random import sample
+
+import plot
 
 # Inference Function
-def infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type):
+def infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type, input_characters_index, inverse_input_characters_index):
     
     model = keras.models.load_model("seq2seq_attention")
 
@@ -38,7 +41,7 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
         decoder_states = [state_h_dec, state_c_dec]
         
     attention_inputs = keras.Input(shape = (None, ))
-    attention_output = model.layers[6]([decoder_outputs, attention_inputs])
+    attention_output, attention_scores = model.layers[6]([decoder_outputs, attention_inputs], return_attention_scores = True)
     decoder_concat_input = model.layers[7]([decoder_outputs, attention_output])
 
     # Dense layer
@@ -47,7 +50,7 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
     # Final decoder model
     decoder_model = keras.Model(
-        [decoder_inputs] + decoder_states_inputs + [attention_inputs], [decoder_outputs] + decoder_states
+        [decoder_inputs] + decoder_states_inputs + [attention_inputs], [decoder_outputs] + decoder_states + [attention_scores]
     )
 
     def decode_sequence(input_seq):
@@ -63,10 +66,11 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
         
         stop_condition = False
         decoded_sentence = ""
+        heatmap_data = []
 
         while not stop_condition:
             output = decoder_model.predict([target_seq] + states_value + [encoder_output])
-            output_tokens, states_value = output[0], output[1:]
+            output_tokens, states_value, attention_weights = output[0], output[1:-1], output[-1]
 
             # Sample a token
             sampled_token_index = np.argmax(output_tokens[0, -1, :])
@@ -78,16 +82,20 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
             target_seq = np.zeros((1, 1))
             target_seq[0, 0] = sampled_token_index 
+            heatmap_data.append((sampled_char, attention_weights[0][0]))
 
-        return decoded_sentence
+        return decoded_sentence, heatmap_data
 
     count, test_size = 0, len(test_input_words)
+
+    visualisation_inputs = sample(range(test_size), 10)
+    heatmaps = []
 
     for seq_index in range(test_size):
         # Take one sequence (part of the training set)
         # for trying out decoding.
         input_seq = encoder_test_input_data[seq_index : seq_index + 1]
-        decoded_word = decode_sequence(input_seq)
+        decoded_word, heatmap_data = decode_sequence(input_seq)
         print("-")
         print("Input sentence:", test_input_words[seq_index])
         print("Decoded sentence:", decoded_word[:-1])
@@ -96,4 +104,9 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
         if(orig_word == decoded_word): count += 1
 
-    return count / test_size
+        if seq_index in visualisation_inputs:
+            heatmap = plot.attention_heatmap(test_input_words[seq_index], heatmap_data, input_characters_index, inverse_input_characters_index)
+            heatmaps.append(heatmap)
+            
+
+    return count / test_size, heatmaps

@@ -4,7 +4,7 @@ from tensorflow import keras
 import load_data, attention_inference
 
 # Load Data
-(encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (val_input_words, val_target_words), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (target_characters_index, inverse_target_characters_index) = load_data.load_data_prediction()
+(encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (val_input_words, val_target_words), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (input_characters_index, inverse_input_characters_index), (target_characters_index, inverse_target_characters_index) = load_data.load_data_prediction()
 
 # Configuration
 batch_size = 128
@@ -53,7 +53,7 @@ if cell_type == "gru":
 
 # Attention
 attention = keras.layers.Attention()
-attention_output = attention([decoder_outputs, encoder_outputs])
+attention_output, _ = attention([decoder_outputs, encoder_outputs], return_attention_scores = True)
 decoder_concat_input = keras.layers.Concatenate(axis = -1)([decoder_outputs, attention_output])
 
 decoder_dense = keras.layers.Dense(num_decoder_characters, activation = "softmax")
@@ -79,9 +79,9 @@ model.fit(
 model.save("seq2seq_attention")
 
 # Inference Call for Validation Data
-# val_accuracy = attention_inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type)
+# val_accuracy, heatmaps = attention_inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type, input_characters_index, inverse_input_characters_index)
 # print("Val Accuracy: ", val_accuracy)
 
 # Inference Call for Test Data
-test_accuracy = attention_inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type)
+test_accuracy, heatmaps = attention_inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type, input_characters_index, inverse_input_characters_index)
 print("Test Accuracy: ", test_accuracy)

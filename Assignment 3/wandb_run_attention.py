@@ -5,7 +5,7 @@ from tensorflow import keras
 import load_data, attention_inference
 
 # Load Data
-(encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (val_input_words, val_target_words), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (target_characters_index, inverse_target_characters_index) = load_data.load_data_prediction()
+(encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (val_input_words, val_target_words), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (input_characters_index, inverse_input_characters_index), (target_characters_index, inverse_target_characters_index) = load_data.load_data_prediction()
 
 def main(config = None):
     run = wandb.init(config = config)
@@ -86,12 +86,12 @@ def main(config = None):
     model.save("seq2seq_attention")
 
     # Inference Call for Validation Data
-    val_accuracy = attention_inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type)
-    wandb.log( { "val_accuracy": val_accuracy})
+    val_accuracy, heatmaps = attention_inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type, input_characters_index, inverse_input_characters_index)
+    wandb.log( { "val_accuracy": val_accuracy, "attention_heatmaps": heatmaps})
 
     # Inference Call for Test Data
-    # test_accuracy = attention_inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type)
-    # wandb.log( { "test_accuracy": test_accuracy} )
+    # test_accuracy, heatmaps = attention_inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type, input_characters_index, inverse_input_characters_index)
+    # wandb.log( { "test_accuracy": test_accuracy, "attention_heatmaps": heatmaps} )
 
 sweep_config = {
 

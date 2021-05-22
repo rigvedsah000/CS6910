@@ -1,5 +1,6 @@
 import numpy as np
 from tensorflow import keras
+from tensorflow.python.ops.array_ops import boolean_mask
 
 # Function to calculate indices of layers
 def get_layer_index(model, enc_latent_dims, cell_type):
@@ -118,13 +119,12 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
         return decoded_sentence
 
-
     def beam_search_decoder(input_seq, k):
         # Encode the input as state vectors.
         states_value = [encoder_model.predict(input_seq)] * len(d_cell_index)
 
         # Generate empty target sequence of length 1.
-        target_seq = np.zeros(( 1, 1))
+        target_seq = np.zeros((1, 1))
 
         # Populate the first character of target sequence with the start character.
         target_seq[0, 0 ] = target_characters_index["\t"]
@@ -138,12 +138,14 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
         while not stop_condition:
 
             all_candidates = list()
+            
             for i in range(len(sequences)):
               output = decoder_model.predict([sequences[i][3]] + sequences[i][2])
               output_tokens, states_value = output[0], output[1:]
               prob = output_tokens[0,-1,:]
               
               score, eow, sv, t_seq, seq, d_word = sequences[i]
+              
               if eow == 0:
                 for j in range(len(inverse_target_characters_index)):
                   char = inverse_target_characters_index[j]
@@ -154,7 +156,6 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
                   candidate = [score - np.log(prob[j]), 0, states_value, target_seq,  seq + [j] , d_word + [char] ]
                   all_candidates.append(candidate)
             
-            
             ordered = sorted(all_candidates, key=lambda x:x[0])
 
             minlen = min(k, len(ordered))
@@ -162,6 +163,7 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
             sequences = ordered[:minlen]
 
             stop_condition = True
+           
             for sequence in range(len(sequences)):
                 score, eow, sv, t_seq, seq, d_word = sequences[sequence]
 
@@ -179,24 +181,25 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
         return best_possible_decoded_sentence
 
-
-    count, test_size = 0, 20               #len(test_input_words)
+    count, test_size = 0, len(test_input_words)
 
     for seq_index in range(test_size):        
         input_seq = encoder_test_input_data[seq_index : seq_index + 1]
 
-        '''  Call to Simple Decode Sequence  '''
-        # decoded_word = decode_sequence(input_seq)
-        
-        '''  Call to Beam Search Decoder  '''
-        decoded_word = beam_search_decoder(input_seq, beam_size)
+        if beam_size == 0:
+            '''  Call to Simple Decode Sequence  '''
+            decoded_word = decode_sequence(input_seq)
+        else:
+            '''  Call to Beam Search Decoder  '''
+            decoded_word = beam_search_decoder(input_seq, beam_size)
 
+        orig_word = test_target_words[seq_index][1:]
+
+        print("-")
         print("Input sentence:", test_input_words[seq_index])
         print("Decoded sentence:", decoded_word[:-1])
-        orig_word = test_target_words[seq_index][1:]
         print("Original sentence:", orig_word[:-1])
         
-        print("-")
         if(orig_word == decoded_word): count += 1
 
     return count / test_size

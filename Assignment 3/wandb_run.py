@@ -5,7 +5,7 @@ from tensorflow import keras
 import load_data, inference
 
 # Load Data
-(encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (val_input_words, val_target_words), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (target_characters_index, inverse_target_characters_index) = load_data.load_data_prediction()
+(encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (val_input_words, val_target_words), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (input_characters_index, inverse_input_characters_index), (target_characters_index, inverse_target_characters_index) = load_data.load_data_prediction()
 
 def main(config = None):
     run = wandb.init(config = config)
@@ -53,15 +53,15 @@ def main(config = None):
         if cell_type == "rnn":
             decoder = keras.layers.SimpleRNN(dec_latent_dims[j], dropout = dropout, return_sequences = True, return_state = True)
             decoder_outputs, state = decoder(decoder_outputs, initial_state = decoder_states)
-            decoder_states = [state]
+            # decoder_states = [state]
         if cell_type == "lstm":
             decoder = keras.layers.LSTM(dec_latent_dims[j], dropout = dropout, return_sequences = True, return_state = True)
             decoder_outputs, state_h, state_c = decoder(decoder_outputs, initial_state = decoder_states)
-            decoder_states = [state_h, state_c]
+            # decoder_states = [state_h, state_c]
         if cell_type == "gru":
             decoder = keras.layers.GRU(dec_latent_dims[j], dropout = dropout, return_sequences = True, return_state = True)
             decoder_outputs, state = decoder(decoder_outputs, initial_state = decoder_states)
-            decoder_states = [state]
+            # decoder_states = [state]
 
     decoder_dense = keras.layers.Dense(num_decoder_characters, activation = "softmax")
     decoder_outputs = decoder_dense(decoder_outputs)
@@ -86,18 +86,18 @@ def main(config = None):
     model.save("seq2seq")
 
     # Inference Call for Validation Data
-    val_accuracy = inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type)
+    val_accuracy = inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type, beam_size)
     wandb.log( { "val_accuracy": val_accuracy})
 
     # Inference Call for Test Data
-    # test_accuracy = inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type)
+    # test_accuracy = inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type, beam_size)
     # wandb.log( { "test_accuracy": test_accuracy} )
 
 sweep_config = {
 
   "name": "Test Sweep 1",
   
-  "method": "grid",
+  "method": "bayes",
 
   'metric': {
       'name': 'accuracy',
