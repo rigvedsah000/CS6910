@@ -2,7 +2,7 @@ import wandb
 from wandb.keras import WandbCallback
 from tensorflow import keras
 
-import load_data, inference
+import load_data, attention_inference
 
 # Load Data
 (encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (val_input_words, val_target_words), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (target_characters_index, inverse_target_characters_index) = load_data.load_data_prediction()
@@ -15,13 +15,11 @@ def main(config = None):
 
     # Configuration
     batch_size = 128
-    epochs = 25
-    embedding_size = config.embedding_size
-    enc_latent_dims = [config.hidden_layer_size] * config.encoder_layers
-    dec_latent_dims  = [config.hidden_layer_size] * config.decoder_layers
-    cell_type = config.cell_type
-    dropout = config.dropout
-    beam_size = config.beam_size
+    epochs = 1
+    embedding_size = 256
+    latent_dim = 256
+    cell_type = "lstm"
+    dropout = 0.3
 
     # Encoder
     encoder_inputs = keras.Input(shape = (None, ))
@@ -29,16 +27,15 @@ def main(config = None):
 
     # Encoder LSTM layers
     encoder_states = list()
-    for j in range(len(enc_latent_dims)):
-        if cell_type == "rnn":
-            encoder_outputs, state = keras.layers.SimpleRNN(enc_latent_dims[j], dropout = dropout, return_state = True, return_sequences = True)(encoder_outputs)
-            encoder_states = [state]
-        if cell_type == "lstm":
-            encoder_outputs, state_h, state_c = keras.layers.LSTM(enc_latent_dims[j], dropout = dropout, return_state = True, return_sequences = True)(encoder_outputs)
-            encoder_states = [state_h,state_c]
-        if cell_type == "gru":
-            encoder_outputs, state = keras.layers.GRU(enc_latent_dims[j], dropout = dropout, return_state = True, return_sequences = True)(encoder_outputs)
-            encoder_states = [state]
+    if cell_type == "rnn":
+        encoder_outputs, state = keras.layers.SimpleRNN(latent_dim, dropout = dropout, return_state = True, return_sequences = True)(encoder_outputs)
+        encoder_states = [state]
+    if cell_type == "lstm":
+        encoder_outputs, state_h, state_c = keras.layers.LSTM(latent_dim, dropout = dropout, return_state = True, return_sequences = True)(encoder_outputs)
+        encoder_states = [state_h,state_c]
+    if cell_type == "gru":
+        encoder_outputs, state = keras.layers.GRU(latent_dim, dropout = dropout, return_state = True, return_sequences = True)(encoder_outputs)
+        encoder_states = [state]
 
     # Decoder
     decoder_inputs = keras.Input(shape=(None, ))
@@ -47,24 +44,27 @@ def main(config = None):
     # We set up our decoder to return full output sequences,
     # and to return internal states as well. We don't use the
     # return states in the training model, but we will use them in inference.
-    decoder_states = encoder_states.copy()
 
-    for j in range(len(dec_latent_dims)):
-        if cell_type == "rnn":
-            decoder = keras.layers.SimpleRNN(dec_latent_dims[j], dropout = dropout, return_sequences = True, return_state = True)
-            decoder_outputs, state = decoder(decoder_outputs, initial_state = decoder_states)
-            decoder_states = [state]
-        if cell_type == "lstm":
-            decoder = keras.layers.LSTM(dec_latent_dims[j], dropout = dropout, return_sequences = True, return_state = True)
-            decoder_outputs, state_h, state_c = decoder(decoder_outputs, initial_state = decoder_states)
-            decoder_states = [state_h, state_c]
-        if cell_type == "gru":
-            decoder = keras.layers.GRU(dec_latent_dims[j], dropout = dropout, return_sequences = True, return_state = True)
-            decoder_outputs, state = decoder(decoder_outputs, initial_state = decoder_states)
-            decoder_states = [state]
+    if cell_type == "rnn":
+        decoder = keras.layers.SimpleRNN(latent_dim, dropout = dropout, return_sequences = True, return_state = True)
+        decoder_outputs, state = decoder(decoder_outputs, initial_state = encoder_states)
+        decoder_states = [state]
+    if cell_type == "lstm":
+        decoder = keras.layers.LSTM(latent_dim, dropout = dropout, return_sequences = True, return_state = True)
+        decoder_outputs, state_h, state_c = decoder(decoder_outputs, initial_state = encoder_states)
+        decoder_states = [state_h, state_c]
+    if cell_type == "gru":
+        decoder = keras.layers.GRU(latent_dim, dropout = dropout, return_sequences = True, return_state = True)
+        decoder_outputs, state = decoder(decoder_outputs, initial_state = encoder_states)
+        decoder_states = [state]
+
+    # Attention
+    attention = keras.layers.Attention()
+    attention_output = attention([decoder_outputs, encoder_outputs])
+    decoder_concat_input = keras.layers.Concatenate(axis = -1)([decoder_outputs, attention_output])
 
     decoder_dense = keras.layers.Dense(num_decoder_characters, activation = "softmax")
-    decoder_outputs = decoder_dense(decoder_outputs)
+    decoder_outputs = decoder_dense(decoder_concat_input)
 
     # Define the model that will turn
     # encoder_input_data & decoder_input_data into decoder_output_data
@@ -83,19 +83,19 @@ def main(config = None):
     )
 
     # Save model
-    model.save("seq2seq")
+    model.save("seq2seq_attention")
 
     # Inference Call for Validation Data
-    val_accuracy = inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type)
+    val_accuracy = attention_inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type)
     wandb.log( { "val_accuracy": val_accuracy})
 
     # Inference Call for Test Data
-    # test_accuracy = inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, enc_latent_dims, dec_latent_dims, cell_type)
+    # test_accuracy = attention_inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type)
     # wandb.log( { "test_accuracy": test_accuracy} )
 
 sweep_config = {
 
-  "name": "Test Sweep 1",
+  "name": "Attention Sweep 1",
   
   "method": "grid",
 
