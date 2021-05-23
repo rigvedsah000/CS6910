@@ -1,32 +1,31 @@
-import plotly.express as px
-
-def attention_heatmap(input_word, heatmap_data, input_characters_index, inverse_input_characters_index):
-
-    # z = [[1, 2, 3], [4, 5, 6]]
-    # x = [1, 2, 4]
-    # y = [1, 2]
-
-    _max = max([max([data[1][i] for i in range(len(input_word))]) for data in heatmap_data[:-1]])
-
-    z = []
-    x = [char for char in input_word]
-    y = []
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
     
-    for data in heatmap_data[:-1]:
-        
-        char, weight = data[0], data[1]
-        y.append(char)
-        z.append([weight[i] / _max for i in range(len(input_word))])
-    
-    fig = px.imshow(z, labels = dict(x = "Input Sequence", y = "Decoded Sequence"), x = x, y = y, color_continuous_scale='gray')
-    
-    fig.update_xaxes(side="top", tickfont = dict(size = 15))
-    fig.update_yaxes(side="left", tickfont = dict(size = 15))
+def attention_heatmap(input_word, heatmap_data):
 
-    # fig.update_layout(width = 850, height = 550)
+    mats = []
+    dec_inputs = []
+
+    for data in heatmap_data:
+        dec_ind, attn  = data[0], data[1]
+        mats.append(attn.reshape(-1)[:len(input_word)])
+        dec_inputs.append(dec_ind)
     
-    fig.show()
+    attention_mat = np.array(mats)
+
+    fig, ax = plt.subplots()
+    ax.imshow(attention_mat)
+
+    ax.set_xticks(np.arange(attention_mat.shape[1]))
+    ax.set_yticks(np.arange(attention_mat.shape[0]))
+
+    ax.set_yticklabels([inp if inp != '\n' else "<e>" for inp in dec_inputs], fontproperties = FontProperties(fname = "Fonts/nirmala.ttf"))
+    ax.set_xticklabels([char for char in input_word])
+
+    ax.tick_params(labelsize = 15)
+    ax.tick_params(axis = 'x', labelrotation =  45)
 
     return fig
 
-# attention_heatmap(None, None, None, None)
+# attention_heatmap(None, None)

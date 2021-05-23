@@ -5,7 +5,7 @@ from random import sample
 import plot
 
 # Inference Function
-def infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type, input_characters_index, inverse_input_characters_index):
+def infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type):
     
     model = keras.models.load_model("seq2seq_attention")
 
@@ -40,8 +40,8 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
         decoder_outputs, state_h_dec, state_c_dec = model.layers[5](decoder_outputs, initial_state = decoder_states_inputs)
         decoder_states = [state_h_dec, state_c_dec]
         
-    attention_inputs = keras.Input(shape = (None, ))
-    attention_output, attention_scores = model.layers[6]([decoder_outputs, attention_inputs], return_attention_scores = True)
+    attention_inputs = keras.Input(shape = (None, latent_dim, ))
+    attention_output, attention_scores = model.layers[6]([attention_inputs, decoder_outputs])
     decoder_concat_input = model.layers[7]([decoder_outputs, attention_output])
 
     # Dense layer
@@ -81,8 +81,8 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
                 stop_condition = True
 
             target_seq = np.zeros((1, 1))
-            target_seq[0, 0] = sampled_token_index 
-            heatmap_data.append((sampled_char, attention_weights[0][0]))
+            target_seq[0, 0] = sampled_token_index
+            heatmap_data.append((sampled_char, attention_weights))
 
         return decoded_sentence, heatmap_data
 
@@ -91,7 +91,7 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
     visualisation_inputs = sample(range(test_size), 10)
     heatmaps = []
 
-    for seq_index in range(test_size):
+    for seq_index in range(5):
         # Take one sequence (part of the training set)
         # for trying out decoding.
         input_seq = encoder_test_input_data[seq_index : seq_index + 1]
@@ -104,8 +104,8 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
         if(orig_word == decoded_word): count += 1
 
-        if seq_index in visualisation_inputs:
-            heatmap = plot.attention_heatmap(test_input_words[seq_index], heatmap_data, input_characters_index, inverse_input_characters_index)
+        if seq_index in range(5):
+            heatmap = plot.attention_heatmap(test_input_words[seq_index], heatmap_data)
             heatmaps.append(heatmap)
             
 
