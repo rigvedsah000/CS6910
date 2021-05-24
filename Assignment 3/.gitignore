@@ -2,3 +2,5 @@ dakshina_dataset_v1.0/
 __pycache__/
 seq2seq*
 wandb/
+lstm_vis*
+conn_vis*

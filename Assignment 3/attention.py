@@ -7,9 +7,9 @@ import load_data, attention_inference, attention_layer
 (encoder_train_input_data, decoder_train_input_data, decoder_train_target_data), (encoder_val_input_data, decoder_val_input_data, decoder_val_target_data), (val_input_words, val_target_words), (encoder_test_input_data, test_input_words, test_target_words), (num_encoder_characters, num_decoder_characters, max_encoder_seq_length, max_decoder_seq_length), (target_characters_index, inverse_target_characters_index) = load_data.load_data_prediction()
 
 # Configuration
-batch_size = 64
-epochs = 1
-embedding_size = 64
+batch_size = 256
+epochs = 25
+embedding_size = 256
 latent_dim = 256
 cell_type = "lstm"
 dropout = 0.3

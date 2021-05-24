@@ -53,6 +53,9 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
         [decoder_inputs] + decoder_states_inputs + [attention_inputs], [decoder_outputs] + decoder_states + [attention_scores]
     )
 
+    def sigmoid(x):
+        return [1/(1 + np.exp(-z)) for z in x]
+
     def decode_sequence(input_seq):
         # Encode the input as state vectors.
         encoder_outputs = encoder_model.predict(input_seq)
@@ -67,6 +70,7 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
         stop_condition = False
         decoded_sentence = ""
         heatmap_data = []
+        visualization_data = []
 
         while not stop_condition:
             output = decoder_model.predict([target_seq] + states_value + [encoder_output])
@@ -83,19 +87,20 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
             target_seq = np.zeros((1, 1))
             target_seq[0, 0] = sampled_token_index
             heatmap_data.append((sampled_char, attention_weights))
+            visualization_data.append((sampled_char, states_value[0]))
 
-        return decoded_sentence, heatmap_data
+        return decoded_sentence, heatmap_data, visualization_data
 
-    count, test_size = 0, len(test_input_words)
+    count, visual_count, test_size = 0, 0, len(test_input_words)
 
     visualisation_inputs = sample(range(test_size), 10)
     heatmaps = []
 
-    for seq_index in range(5):
+    for seq_index in range(test_size):
         # Take one sequence (part of the training set)
         # for trying out decoding.
         input_seq = encoder_test_input_data[seq_index : seq_index + 1]
-        decoded_word, heatmap_data = decode_sequence(input_seq)
+        decoded_word, heatmap_data, visualization_data = decode_sequence(input_seq)
         print("-")
         print("Input sentence:", test_input_words[seq_index])
         print("Decoded sentence:", decoded_word[:-1])
@@ -104,9 +109,58 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
         if(orig_word == decoded_word): count += 1
 
-        if seq_index in range(5):
+        if seq_index in visualisation_inputs:
+            
+            # Hetamps Plot
             heatmap = plot.attention_heatmap(test_input_words[seq_index], heatmap_data)
             heatmaps.append(heatmap)
             
+            # Connectivity Visualization
+            with open("conn_vis.txt", "a", encoding='utf-8') as filepointer:
 
+                '''' The logic to compute the  heatmap and true word '''
+
+                true_word = test_input_words[seq_index]
+
+                ''' Writing data into the conv_vis.txt file for visualisation purpose '''
+                
+                filepointer.write(true_word)
+                filepointer.write("\t")
+                filepointer.write(str(len(heatmap_data)))
+                filepointer.write("\n")
+
+                for tup in range(len(heatmap_data)):
+                    dec_char = heatmap_data[tup][0]
+                    dec_char_prob = heatmap_data[tup][1].reshape(-1)
+                
+                    if tup == len(heatmap_data) - 1:
+                        filepointer.write("<e>")
+                    else:
+                        filepointer.write(dec_char)
+                    
+                    filepointer.write("\t")
+
+                    for p in range(len(true_word)):
+                        filepointer.write(str(dec_char_prob[p]))
+                        filepointer.write("\t")
+
+                    filepointer.write("\n")
+
+                filepointer.write("Next\n")
+
+            # LSTM Visualization
+            file = open("lstm_vis_" + str(visual_count) + ".txt", "w", encoding='utf-8')
+            file.write(test_input_words[seq_index] + "\n")
+
+            for i, data in enumerate(visualization_data):
+        
+                dec_char, neuron_activation  = data[0], sigmoid(data[1].reshape(-1))
+                
+                if i == len(visualization_data) - 1:
+                    file.write("<e>" + "\t" + str(neuron_activation) + "\n")
+                else:
+                    file.write(dec_char + "\t" + str(neuron_activation) + "\n")
+
+            visual_count += 1
+            
     return count / test_size, heatmaps

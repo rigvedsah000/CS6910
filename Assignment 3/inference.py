@@ -1,6 +1,6 @@
 import numpy as np
 from tensorflow import keras
-from tensorflow.python.ops.array_ops import boolean_mask
+from random import sample
 
 # Function to calculate indices of layers
 def get_layer_index(model, enc_latent_dims, cell_type):
@@ -87,6 +87,9 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
         [decoder_inputs] + decoder_states_inputs, [decoder_outputs] + decoder_states
     )
 
+    def sigmoid(x):
+        return [1/(1 + np.exp(-z)) for z in x]
+
     def decode_sequence(input_seq):
         # Encode the input as state vectors.
         states_value = [encoder_model.predict(input_seq)] * len(d_cell_index)
@@ -99,6 +102,7 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
         
         stop_condition = False
         decoded_sentence = ""
+        visualization_data = []
 
         while not stop_condition:
             output = decoder_model.predict([target_seq] + states_value)
@@ -116,8 +120,9 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
             target_seq = np.zeros((1, 1))
             target_seq[0, 0] = sampled_token_index 
+            visualization_data.append((sampled_char, states_value[0]))
 
-        return decoded_sentence
+        return decoded_sentence, visualization_data
 
     def beam_search_decoder(input_seq, k):
         # Encode the input as state vectors.
@@ -165,6 +170,7 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
             stop_condition = True
            
             for sequence in range(len(sequences)):
+               
                 score, eow, sv, t_seq, seq, d_word = sequences[sequence]
 
                 if d_word[-1] == "\n": eow = 1
@@ -181,14 +187,16 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
         return best_possible_decoded_sentence
 
-    count, test_size = 0, len(test_input_words)
+    count, visual_count, test_size = 0, 0, len(test_input_words)
+
+    visualisation_inputs = sample(range(test_size), 10)
 
     for seq_index in range(test_size):        
         input_seq = encoder_test_input_data[seq_index : seq_index + 1]
 
         if beam_size == 0:
             '''  Call to Simple Decode Sequence  '''
-            decoded_word = decode_sequence(input_seq)
+            decoded_word, visualization_data = decode_sequence(input_seq)
         else:
             '''  Call to Beam Search Decoder  '''
             decoded_word = beam_search_decoder(input_seq, beam_size)
@@ -201,5 +209,22 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
         print("Original sentence:", orig_word[:-1])
         
         if(orig_word == decoded_word): count += 1
+
+        if beam_size == 0 and seq_index in visualisation_inputs:
+            
+            # LSTM Visualization
+            file = open("lstm_vis_" + str(visual_count) + ".txt", "w", encoding='utf-8')
+            file.write(test_input_words[seq_index] + "\n")
+
+            for i, data in enumerate(visualization_data):
+        
+                dec_char, neuron_activation  = data[0], sigmoid(data[1].reshape(-1))
+                
+                if i == len(visualization_data) - 1:
+                    file.write("<e>" + "\t" + str(neuron_activation) + "\n")
+                else:
+                    file.write(dec_char + "\t" + str(neuron_activation) + "\n")
+            
+            visual_count += 1
 
     return count / test_size
