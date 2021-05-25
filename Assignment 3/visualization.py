@@ -110,5 +110,5 @@ def visualize_lstm(N, neuron):
         visualize_l(dec_seq, prob)
         print()
 
-# visualize_connectivity(10)
+ visualize_connectivity(10)
 # visualize_lstm(10, 0)
