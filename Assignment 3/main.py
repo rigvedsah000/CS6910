@@ -8,13 +8,14 @@ import load_data, inference
 
 # Configuration
 batch_size = 128
-epochs = 1
+epochs = 25
 embedding_size = 256
 enc_latent_dims = [256] * 1
 dec_latent_dims  = [256] * 1
 cell_type = "lstm"
 dropout = 0.3
 beam_size = 0
+
 # Encoder
 encoder_inputs = keras.Input(shape = (None, ))
 encoder_outputs = keras.layers.Embedding(input_dim = num_encoder_characters, output_dim = embedding_size, input_length = max_encoder_seq_length)(encoder_inputs)

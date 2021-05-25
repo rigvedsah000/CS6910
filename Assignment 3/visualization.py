@@ -16,25 +16,19 @@ def get_clr(value, mode):
         value = int((value * 100) / 5)
         return colors[value]
     else:
-        colors = ['#FFFFFF','#DFFFFF','#BFFFFF','#9FFFFF','#7FFFFF','#5FFFFF','#3FFFFF','#03FFFF','#00EFFF','#00DFFF','#00CFFF','#00BFFF','#00AFFF','#009FFF']
-        factor = 0.07142857142857142
-        color_index = int(value/factor)
-        return colors[color_index]
-        # colors = ['#ffffff', '#ecf7fb', '#daeff7', '#c7e7f3', '#b5dfef', '#a2d7eb', '#90cfe7', '#7dc7e3', '#6abfdf', '#58b7db', '#46afd7']
-        # value = int((value * 100) / 10)
-        # return colors[value]
+        # colors = ['#FFFFFF','#DFFFFF','#BFFFFF','#9FFFFF','#7FFFFF','#5FFFFF','#3FFFFF','#03FFFF','#00EFFF','#00DFFF','#00CFFF','#00BFFF','#00AFFF','#009FFF']
+        # factor = 0.07142857142857142
+        # color_index = int(value/factor)
+        # return colors[color_index]
+        colors = ['#ffffff', '#ecf7fb', '#daeff7', '#c7e7f3', '#b5dfef', '#a2d7eb', '#90cfe7', '#7dc7e3', '#6abfdf', '#58b7db', '#46afd7']
+        value = int((value * 100) / 10)
+        return colors[value]
 
-def visualize_c(dec_char, input_seq, prob):
-    text_colours = []
-
-    for c, p in zip(input_seq, prob): 
-        text = (c, get_clr(p, 'c'))
-        text_colours.append(text)
-
+def visualize_c(dec_char, text_colours):
     if (dec_char == "<e>"):
-      display(HTML(" <b> &lt; e &gt; </b>  &emsp; &nbsp; " + ' '.join([cstr(ti, color = ci) for ti, ci in text_colours])))
+      display(HTML(''.join([cstr(ti, color = ci) for ti, ci in text_colours]) + " <b> &emsp; &lt; e &gt; </b>  &emsp; &nbsp; "))
     else:
-      display(HTML(" <b>{}</b>  &emsp; &emsp; ".format(dec_char) + ' '.join([cstr(ti, color = ci) for ti, ci in text_colours])))
+      display(HTML(''.join([cstr(ti, color = ci) for ti, ci in text_colours]) + " <b> &emsp; {}</b>  &emsp; &emsp; ".format(dec_char)))
 
 def visualize_l(dec_seq, prob):
     text_colours = []
@@ -89,10 +83,10 @@ def visualize_connectivity(N):
                         p = float(line[prob_index])
 
                         true_char = true_word_array[prob_index]
-                        text= (true_char, get_clr(p) )
+                        text= (true_char, get_clr(p, 'c') )
                         text_colours.append(text)
 
-                    visualize(dec_char, text_colours)
+                    visualize_c(dec_char, text_colours)
             
                     i += 1
 
@@ -114,7 +108,7 @@ def visualize_lstm(N, neuron):
             prob.append(ast.literal_eval(temp[1][:-1])[neuron - 1])
 
         visualize_l(dec_seq, prob)
-        print("\n")
+        print()
 
 # visualize_connectivity(10)
-# visualize_lstm(10, 64)
+# visualize_lstm(10, 0)

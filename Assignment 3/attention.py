@@ -79,9 +79,9 @@ model.fit(
 model.save("seq2seq_attention")
 
 # Inference Call for Validation Data
-# val_accuracy, heatmaps = attention_inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type)
-# print("Val Accuracy: ", val_accuracy)
+val_accuracy, heatmaps = attention_inference.infer(encoder_val_input_data, val_input_words, val_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type)
+print("Val Accuracy: ", val_accuracy)
 
 # Inference Call for Test Data
-test_accuracy, heatmaps = attention_inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type)
-print("Test Accuracy: ", test_accuracy)
+# test_accuracy, heatmaps = attention_inference.infer(encoder_test_input_data, test_input_words, test_target_words, num_decoder_characters, max_decoder_seq_length, target_characters_index, inverse_target_characters_index, latent_dim, cell_type)
+# print("Test Accuracy: ", test_accuracy)

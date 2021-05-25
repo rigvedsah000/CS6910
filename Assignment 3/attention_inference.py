@@ -93,6 +93,9 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
     count, visual_count, test_size = 0, 0, len(test_input_words)
 
+    predictions_attention = open("predictions_attention.csv", "w", encoding='utf-8')
+    predictions_attention.write("Input Sentence,Predicted Sentence,Original Sentence\n")  
+
     visualisation_inputs = sample(range(test_size), 10)
     heatmaps = []
 
@@ -101,17 +104,20 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
         # for trying out decoding.
         input_seq = encoder_test_input_data[seq_index : seq_index + 1]
         decoded_word, heatmap_data, visualization_data = decode_sequence(input_seq)
-        print("-")
-        print("Input sentence:", test_input_words[seq_index])
-        print("Decoded sentence:", decoded_word[:-1])
         orig_word = test_target_words[seq_index][1:]
-        print("Original sentence:", orig_word[:-1])
+
+        # print("-")
+        # print("Input sentence:", test_input_words[seq_index])
+        # print("Decoded sentence:", decoded_word[:-1])
+        # print("Original sentence:", orig_word[:-1])
+
+        predictions_attention.write(test_input_words[seq_index] + "," + decoded_word[:-1] + "," + orig_word[:-1] + "\n")
 
         if(orig_word == decoded_word): count += 1
 
         if seq_index in visualisation_inputs:
             
-            # Hetamps Plot
+            # Heatmap Plot
             heatmap = plot.attention_heatmap(test_input_words[seq_index], heatmap_data)
             heatmaps.append(heatmap)
             

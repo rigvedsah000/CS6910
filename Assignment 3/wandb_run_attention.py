@@ -14,7 +14,7 @@ def main(config = None):
     run.name = "Embedding Size: " + str(config.embedding_size) + " Cell Type: " + config.cell_type + " Dropout: " + str(config.dropout) + " Beam Size: " + str(config.beam_size) + " Encoder Layers: " + str(config.encoder_layers) + " Decoder Layers: " + str(config.decoder_layers) + " Hidder Layer Size: " + str(config.hidden_layer_size)
 
     # Configuration
-    batch_size = 128
+    batch_size = 256
     epochs = 25
     embedding_size = config.embedding_size
     latent_dim = config.hidden_layer_size

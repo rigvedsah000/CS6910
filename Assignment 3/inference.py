@@ -189,9 +189,12 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
     count, visual_count, test_size = 0, 0, len(test_input_words)
 
-    visualisation_inputs = sample(range(test_size), 10)
+    predictions_vanilla = open("predictions_vanilla.csv", "w", encoding='utf-8')
+    predictions_vanilla.write("Input Sentence,Predicted Sentence,Original Sentence\n")  
 
-    for seq_index in range(test_size):        
+    visualisation_inputs = sample(range(5), 5)
+
+    for seq_index in range(5):        
         input_seq = encoder_test_input_data[seq_index : seq_index + 1]
 
         if beam_size == 0:
@@ -203,10 +206,12 @@ def infer(encoder_test_input_data, test_input_words, test_target_words, num_deco
 
         orig_word = test_target_words[seq_index][1:]
 
-        print("-")
-        print("Input sentence:", test_input_words[seq_index])
-        print("Decoded sentence:", decoded_word[:-1])
-        print("Original sentence:", orig_word[:-1])
+        # print("-")
+        # print("Input sentence:", test_input_words[seq_index])
+        # print("Decoded sentence:", decoded_word[:-1])
+        # print("Original sentence:", orig_word[:-1])
+
+        predictions_vanilla.write(test_input_words[seq_index] + "," + decoded_word[:-1] + "," + orig_word[:-1] + "\n")
         
         if(orig_word == decoded_word): count += 1
 
